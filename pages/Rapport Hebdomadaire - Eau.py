@@ -11,6 +11,23 @@ from io import BytesIO
 # Configurer la locale pour les noms des jours en français
 locale.setlocale(locale.LC_TIME, "C")
 
+
+# Dictionnaire pour traduire les jours de la semaine en français
+days_translation = {
+    "Monday": "Lundi",
+    "Tuesday": "Mardi",
+    "Wednesday": "Mercredi",
+    "Thursday": "Jeudi",
+    "Friday": "Vendredi",
+    "Saturday": "Samedi",
+    "Sunday": "Dimanche",
+}
+
+# Fonction pour obtenir un nom de jour en français
+def get_french_day(date):
+    day_english = date.strftime("%A")  # Nom du jour en anglais
+    return days_translation.get(day_english, day_english)  # Traduction en français
+
 # Fonction pour écrire dans un fichier log
 def write_log(message):
     with open("log.txt", "a") as log_file:
@@ -142,41 +159,64 @@ else:
     st.write("### Données de consommation sur la semaine")
     st.dataframe(daily_data)
 
-    # Créer les colonnes pour les plages horaires
-    write_log("Calcul des consommations par plages horaires...")
-    hourly_data = []
-    for start, end in parsed_time_ranges:
-        col_name = f"{start}h-{end}h"
-        if start < end:
-            hourly_data.append(filtered_data[(filtered_data["DateTime"].dt.hour >= start) & (filtered_data["DateTime"].dt.hour < end)].groupby("Jour")["Consomation eau général"].sum().rename(col_name))
-        else:
-            hourly_data.append(filtered_data[(filtered_data["DateTime"].dt.hour >= start) | (filtered_data["DateTime"].dt.hour < end)].groupby("Jour")["Consomation eau général"].sum().rename(col_name))
-    hourly_data = pd.concat(hourly_data, axis=1)
-    write_log(f"Données horaires par plage calculées : {hourly_data.to_string()}")
+# Créer les colonnes pour les plages horaires
+write_log("Calcul des consommations par plages horaires...")
+hourly_data = []
+for start, end in parsed_time_ranges:
+    col_name = f"{start}h-{end}h"
+    if start < end:
+        hourly_data.append(
+            filtered_data[(filtered_data["DateTime"].dt.hour >= start) & (filtered_data["DateTime"].dt.hour < end)]
+            .groupby("Jour")["Consomation eau général"].sum()
+            .rename(col_name)
+        )
+    else:
+        hourly_data.append(
+            filtered_data[(filtered_data["DateTime"].dt.hour >= start) | (filtered_data["DateTime"].dt.hour < end)]
+            .groupby("Jour")["Consomation eau général"].sum()
+            .rename(col_name)
+        )
+hourly_data = pd.concat(hourly_data, axis=1)
 
+# Garantir un ordre constant des colonnes
+hourly_data = hourly_data[[f"{start}h-{end}h" for start, end in parsed_time_ranges]]
+write_log(f"Données horaires par plage calculées : {hourly_data.to_string()}")
 
-    # Création des diagrammes en cercle pour chaque jour
-    write_log("Création des diagrammes en cercle pour chaque jour...")
-    day_charts = st.columns(5)
-    for i, (day, day_data) in enumerate(hourly_data.iterrows()):
-        fig = go.Figure()
-        fig.add_trace(go.Pie(
-            labels=hourly_data.columns,
-            values=day_data,
-            name=f"{day}"
-        ))
-        fig.update_layout(title=f"{day.strftime('%A %d/%m/%Y').capitalize()}")
-        day_charts[i % 5].plotly_chart(fig, use_container_width=True)
+# Palette de couleurs fixe pour chaque plage horaire
+color_mapping = {f"{start}h-{end}h": color for (start, end), color in zip(parsed_time_ranges, ["#636EFA", "#EF553B", "#00CC96", "#AB63FA", "#FFA15A"])}
 
-    # Création du diagramme en cercle pour la semaine entière
-    write_log("Création du diagramme en cercle pour la semaine entière...")
-    weekly_totals = hourly_data.sum()
-    fig_weekly = go.Figure()
-    fig_weekly.add_trace(go.Pie(
+# Création des diagrammes en cercle pour chaque jour
+write_log("Création des diagrammes en cercle pour chaque jour...")
+day_charts = st.columns(4)
+for i, (day, day_data) in enumerate(hourly_data.iterrows()):
+    fig = go.Figure()
+    fig.add_trace(go.Pie(
         labels=hourly_data.columns,
-        values=weekly_totals,
-        name="Semaine"
+        values=[day_data[col] for col in hourly_data.columns],
+        name=f"{day}",
+        marker_colors=[color_mapping[col] for col in hourly_data.columns]  # Appliquer les couleurs fixes
     ))
-    fig_weekly.update_layout(title=f"Répartition des consommations par plages horaires - Semaine n°{week_number} {year}")
-    st.plotly_chart(fig_weekly, use_container_width=True)
+
+    fig.update_layout(
+        title=f"{get_french_day(day) + day.strftime(' %d/%m/%Y').capitalize()}",
+        legend=dict(traceorder="normal")  # Assurer l'ordre constant des légendes
+    )
+    day_charts[i % 4].plotly_chart(fig, use_container_width=True)
+
+# Création du diagramme en cercle pour la semaine entière
+write_log("Création du diagramme en cercle pour la semaine entière...")
+weekly_totals = hourly_data.sum()
+fig_weekly = go.Figure()
+fig_weekly.add_trace(go.Pie(
+    labels=hourly_data.columns,
+    values=[weekly_totals[col] for col in hourly_data.columns],
+    name="Semaine",
+    marker_colors=[color_mapping[col] for col in hourly_data.columns]  # Appliquer les couleurs fixes
+))
+fig_weekly.update_layout(
+    title=f"Répartition des consommations par plages horaires - Semaine n°{week_number} {year}",
+    legend=dict(traceorder="normal")  # Assurer l'ordre constant des légendes
+)
+st.plotly_chart(fig_weekly, use_container_width=True)
+
 

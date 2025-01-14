@@ -146,15 +146,7 @@ else:
     if graph_type == "Graphique linéaire":
             fig = go.Figure()
             for col in columns:
-                # Tracer des données complètes pour interactivité
-                fig.add_trace(go.Scatter(
-                    x=all_data[date_col],
-                    y=all_data[col],
-                    mode='lines+markers',
-                    name=col,
-                    line=dict(width=1),
-                    opacity=0.3
-                ))
+                
                 # Tracer les données filtrées
                 fig.add_trace(go.Scatter(
                     x=filtered_data[date_col],
