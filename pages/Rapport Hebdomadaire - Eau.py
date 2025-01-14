@@ -164,6 +164,9 @@ else:
     filtered_columns = [col for col in daily_data.columns if "eau" in col.lower()]
     filtered_table = daily_data[filtered_columns]
 
+    # Ajouter les lignes moyenne et somme au tableau des données filtrées
+    filtered_table.loc['Moyenne'] = filtered_table.mean()
+    filtered_table.loc['Somme'] = filtered_table.sum()
 
     # Afficher le tableau des valeurs de consommation pour la semaine
     st.write("### Données de consommation sur la semaine")
