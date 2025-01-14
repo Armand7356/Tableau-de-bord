@@ -170,7 +170,7 @@ else:
 
     # Afficher le tableau des valeurs de consommation pour la semaine
     st.write("### Données de consommation sur la semaine")
-    st.dataframe(daily_data)
+    st.dataframe(filtered_table)
 
 # Créer les colonnes pour les plages horaires
 write_log("Calcul des consommations par plages horaires...")
