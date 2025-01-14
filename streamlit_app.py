@@ -1,5 +1,7 @@
 import streamlit as st
 import socket
+from datetime import datetime
+
 # Configurer l'application principale
 st.set_page_config(
     page_title="Application Multi-pages",
