@@ -1,11 +1,25 @@
 import streamlit as st
-
+import socket
 # Configurer l'application principale
 st.set_page_config(
     page_title="Application Multi-pages",
     page_icon="📊",
     layout="wide"
 )
+# Fonction pour écrire dans un fichier log
+def write_log(message):
+    with open("log.txt", "a") as log_file:
+        log_file.write(f"{datetime.now()} - {message}\n")
+
+# Fonction pour obtenir l'adresse IP de l'utilisateur
+def get_user_ip():
+    try:
+        hostname = socket.gethostname()
+        return socket.gethostbyname(hostname)
+    except Exception as e:
+        return "IP inconnue"
+    
+write_log(get_user_ip)
 
 st.title("Tableau de bord énergie")
 st.write("Utilisez le menu pour naviguer entre les pages.")
