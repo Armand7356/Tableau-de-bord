@@ -136,7 +136,7 @@ else:
 
     # Ajouter une colonne "Autres"
     if "Consomation eau général" in daily_data.columns:
-        daily_data["Autres"] = daily_data["Consomation eau général"] - (
+        daily_data["eau Autres"] = daily_data["Consomation eau général"] - (
             daily_data.get("Consomation eau ballon", 0) +
             daily_data.get("Consomation eau laveuse", 0) +
             daily_data.get("Consomation eau chauferie", 0)
@@ -145,7 +145,7 @@ else:
         
         fig.add_trace(go.Bar(
             x=daily_data.index,
-            y=daily_data["Autres"],
+            y=daily_data["eau Autres"],
             name="Autres"
         ))
 
