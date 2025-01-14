@@ -25,10 +25,10 @@ write_log(get_user_ip)
 
 st.title("Tableau de bord énergie")
 st.write("Utilisez le menu pour naviguer entre les pages.")
-st.write("-   page 1: Visualisation manuelle")
-st.write("-   page 2: Rapport Consomation eau par semaine")
+st.write("-   page 1: Rapport Consomation eau par semaine")
+st.write("-   page 2: Rapport Consomation gaz par semaine")
 st.write("-   page 3: Rapport Consomation éléctricité par semaine")
-st.write("-   page 4: Rapport Consomation gaz par semaine")
+st.write("-   page 4: Visualisation manuelle")
 
 import os
 import time
