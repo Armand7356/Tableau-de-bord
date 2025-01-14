@@ -51,7 +51,7 @@ write_log(f"Aperçu des données horaires : {df_hourly.head().to_string()}")
 st.title("Rapport Hebdomadaire - EAU")
 
 # Create a horizontal layout for filters
-col1, col2, col3, col4, col5 = st.columns([1, 1.2, 1.2, 1.2, 1.8])
+col1, col2, col3, col4, col5 = st.columns([1.8, 1.2, 1.2, 1.8, 1.8])
 
 with col1:
 
