@@ -100,8 +100,3 @@ else:
         st.experimental_rerun()
 
 
-    # Bouton de déconnexion
-    if st.sidebar.button("Se déconnecter"):
-        st.session_state.authenticated = False
-        st.session_state.username = None
-        st.experimental_rerun()
