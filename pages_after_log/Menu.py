@@ -16,8 +16,6 @@ def write_log(message):
 # Configurer l'application principale
 st.set_page_config(
     page_title="Application Multi-pages",
-    page_icon="📊",
-    layout="wide"
 )
 
 

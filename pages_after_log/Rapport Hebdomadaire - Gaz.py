@@ -29,7 +29,7 @@ df_hourly = data.parse("Conso_h")
 write_log(f"Aperçu des données horaires : {df_hourly.head().to_string()}")
 
 # Configurer la page
-st.title("Rapport Hebdomadaire - Électricité")
+st.title("Rapport Hebdomadaire - Gaz")
 
 # Sélection de la semaine
 current_date = datetime.now()
