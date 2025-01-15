@@ -77,10 +77,10 @@ else:
     if st.session_state.username != "Admin":
         available_pages = [page for page in available_pages if page != "Gestion utilisateurs"]
 
-    # Tri des pages dans l'ordre d'existence dans le dossier
-    available_pages = sorted(
-        available_pages, key=lambda x: os.path.getctime(f"{pages_directory}/{x}.py")
-    )
+    # Récupérer les fichiers dans l'ordre d'existence
+    available_pages = [
+    file.replace(".py", "") for file in os.listdir(pages_directory) if file.endswith(".py")
+]
 
     # Sélection de la page via le menu de navigation
     selected_page = st.sidebar.radio("Choisissez une page", available_pages)
