@@ -7,6 +7,8 @@ from datetime import datetime
 # Chemin vers le fichier contenant les utilisateurs
 users_file = "users.json"
 
+st.set_page_config(layout="wide")
+
 # Initialisation du fichier utilisateurs si inexistant
 if not os.path.exists(users_file):
     default_user = {
