@@ -55,6 +55,8 @@ if not st.session_state.authenticated:
             write_log(f"Connexion réussie : {username}")
             write_log(get_user_ip)
             st.experimental_rerun()  # Recharger pour cacher les pages
+            st.session_state.authenticated = True
+            st.experimental_rerun()  # Recharger pour cacher les pages
         else:
             st.error("Nom d'utilisateur ou mot de passe incorrect.")
             write_log(f"Tentative de connexion échouée : {username}")
