@@ -23,6 +23,15 @@ def write_log(message):
 # Fonction d'authentification
 def authenticate(username, password, users):
     return username in users and users[username] == password
+# Fonction pour obtenir l'adresse IP de l'utilisateur
+def get_user_ip():
+    try:
+        hostname = socket.gethostname()
+        return socket.gethostbyname(hostname)
+    except Exception as e:
+        return "IP inconnue"
+    
+
 
 # Charger les utilisateurs depuis le fichier
 users_file = "users.txt"  # Chemin vers le fichier contenant les utilisateurs
@@ -44,6 +53,7 @@ if not st.session_state.authenticated:
             st.session_state.authenticated = True
             st.success(f"Bienvenue, {username} !")
             write_log(f"Connexion réussie : {username}")
+            write_log(get_user_ip)
             st.experimental_rerun()  # Recharger pour cacher les pages
         else:
             st.error("Nom d'utilisateur ou mot de passe incorrect.")
