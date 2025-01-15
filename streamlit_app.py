@@ -42,14 +42,14 @@ if login_button:
         st.error("Nom d'utilisateur ou mot de passe incorrect.")
         write_log(f"Tentative de connexion échouée : {username}")
 
-
+""""""
 # Configurer l'application principale
 st.set_page_config(
     page_title="Application Multi-pages",
     page_icon="📊",
     layout="wide"
 )
-
+""""""
 # Fonction pour obtenir l'adresse IP de l'utilisateur
 def get_user_ip():
     try:
