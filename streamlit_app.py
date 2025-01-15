@@ -68,20 +68,37 @@ else:
     st.sidebar.title(f"Bienvenue, {st.session_state.username} !")
 
     # Navigation vers les pages
+    pages_directory = "pages_after_log"
     available_pages = [
-        file.replace(".py", "") for file in os.listdir("pages_after_log") if file.endswith(".py")
+        file.replace(".py", "") for file in os.listdir(pages_directory) if file.endswith(".py")
     ]
 
-    # Restreindre l'accès à "Gestion utilisateurs" uniquement pour Admin
+    # Restreindre l'accès à certaines pages (exemple : "Gestion utilisateurs" uniquement pour Admin)
     if st.session_state.username != "Admin":
         available_pages = [page for page in available_pages if page != "Gestion utilisateurs"]
 
+    # Tri des pages dans l'ordre d'existence dans le dossier
+    available_pages = sorted(
+        available_pages, key=lambda x: os.path.getctime(f"{pages_directory}/{x}.py")
+    )
+
+    # Sélection de la page via le menu de navigation
     selected_page = st.sidebar.radio("Choisissez une page", available_pages)
 
     # Charger dynamiquement la page sélectionnée
     if selected_page:
-        with open(f"pages_after_log/{selected_page}.py", "r") as f:
-            exec(f.read())
+        try:
+            with open(f"{pages_directory}/{selected_page}.py", "r") as f:
+                exec(f.read())  # Charge et exécute le contenu de la page
+        except Exception as e:
+            st.error(f"Erreur lors du chargement de la page {selected_page}: {e}")
+
+    # Bouton de déconnexion
+    if st.sidebar.button("Se déconnecter"):
+        st.session_state.authenticated = False
+        st.session_state.username = None
+        st.experimental_rerun()
+
 
     # Bouton de déconnexion
     if st.sidebar.button("Se déconnecter"):
