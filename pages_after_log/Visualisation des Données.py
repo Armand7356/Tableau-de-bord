@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 import locale
 
 # Configure Streamlit page layout
-st.set_page_config(page_title="Tableau de bord", layout="wide")
+st.set_page_config(page_title="Tableau de bord")
 
 
 # Fonction pour écrire dans un fichier log

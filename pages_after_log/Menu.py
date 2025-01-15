@@ -3,21 +3,19 @@ import socket
 from datetime import datetime
 
 
-# Fonction pour écrire dans un fichier log
-def write_log(message):
-    with open("log.txt", "a") as log_file:
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log_file.write(f"{timestamp} - {message}\n")
 
-
-
-
+page_title="Application Multi-pages"
 
 # Configurer l'application principale
 st.set_page_config(
     page_title="Application Multi-pages",
 )
 
+# Fonction pour écrire dans un fichier log
+def write_log(message):
+    with open("log.txt", "a") as log_file:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_file.write(f"{timestamp} - {message}\n")
 
 
 st.title("Tableau de bord énergie")
