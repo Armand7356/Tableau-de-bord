@@ -4,12 +4,8 @@ from datetime import datetime
 
 
 
-page_title="Application Multi-pages"
-
-# Configurer l'application principale
-st.set_page_config(
-    page_title="Application Multi-pages",
-)
+# Configurer la page
+st.title("Application Multi-pages")
 
 # Fonction pour écrire dans un fichier log
 def write_log(message):

@@ -7,7 +7,11 @@ from datetime import datetime
 # Chemin vers le fichier contenant les utilisateurs
 users_file = "users.json"
 
-st.set_page_config(layout="wide")
+# Configurer l'application principale
+st.set_page_config(
+    page_title="Tableau de Bord",
+    layout="wide",
+)
 
 # Initialisation du fichier utilisateurs si inexistant
 if not os.path.exists(users_file):
