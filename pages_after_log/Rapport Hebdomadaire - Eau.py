@@ -129,7 +129,7 @@ else:
             fig.add_trace(go.Bar(
                 x=daily_data.index,
                 y=daily_data[col],
-                name=col
+                name=col.replace("Consomation", "").strip()
             ))
 
 
