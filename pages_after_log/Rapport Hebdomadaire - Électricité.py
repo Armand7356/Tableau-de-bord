@@ -26,7 +26,7 @@ write_log(f"Fichier chargé avec succès : {data.sheet_names}")
 # Charger les données horaires
 write_log("Chargement des données horaires...")
 df_hourly = data.parse("Conso_h")
-write_log(f"Aperçu des données horaires : {df_hourly.head().to_string()}")
+#write_log(f"Aperçu des données horaires : {df_hourly.head().to_string()}")
 
 # Configurer la page
 st.title("Rapport Hebdomadaire - Électricité")
@@ -61,7 +61,7 @@ with col4:
     )
     try:
         parsed_time_ranges = [(int(start), int(end)) for start, end in (range_.split('-') for range_ in time_ranges.split(','))]
-        write_log(f"Plages horaires sélectionnées : {parsed_time_ranges}")
+        #write_log(f"Plages horaires sélectionnées : {parsed_time_ranges}")
     except ValueError:
         st.error("Format des plages horaires invalide. Utilisez le format hh-hh,hh-hh,...")
         write_log("Erreur : Format des plages horaires invalide.")
@@ -81,7 +81,7 @@ def process_data_and_display_elec(df_hourly, week_number, year, start_hour, titl
     filtered_data = df_hourly[(df_hourly["Semaine"] == week_number) & (df_hourly["Annee"] == year)]
     filtered_data = filtered_data[filtered_data["DateTime"].dt.hour >= start_hour]
     filtered_data = filtered_data[filtered_data["DateTime"] < (filtered_data["DateTime"].max() + timedelta(days=1))]
-    write_log(f"Données horaires filtrées : {filtered_data.to_string()}")
+    #write_log(f"Données horaires filtrées : {filtered_data.to_string()}")
 
     if filtered_data.empty:
         st.warning(f"Aucune donnée disponible pour {title_prefix} la semaine sélectionnée.")
@@ -106,7 +106,7 @@ def process_data_and_display_elec(df_hourly, week_number, year, start_hour, titl
     # Limiter aux jours de Lundi (0) à Dimanche (6)
     daily_data = daily_data.loc[daily_data.index.dayofweek < 7]
 
-    write_log(f"Données journalières calculées : {daily_data.to_string()}")
+    #write_log(f"Données journalières calculées : {daily_data.to_string()}")
 
     # Création de l'histogramme empilé
     write_log("Création de l'histogramme empilé...")

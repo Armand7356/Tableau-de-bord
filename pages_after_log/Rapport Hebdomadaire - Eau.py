@@ -45,7 +45,7 @@ write_log(f"Fichier chargé avec succès : {data.sheet_names}")
 # Charger les données horaires
 write_log("Chargement des données horaires...")
 df_hourly = data.parse("Conso_h")
-write_log(f"Aperçu des données horaires : {df_hourly.head().to_string()}")
+#write_log(f"Aperçu des données horaires : {df_hourly.head().to_string()}")
 
 # Configurer la page
 st.title("Rapport Hebdomadaire - EAU")
@@ -80,7 +80,7 @@ with col4:
     )
     try:
         parsed_time_ranges = [(int(start), int(end)) for start, end in (range_.split('-') for range_ in time_ranges.split(','))]
-        write_log(f"Plages horaires sélectionnées : {parsed_time_ranges}")
+        #write_log(f"Plages horaires sélectionnées : {parsed_time_ranges}")
     except ValueError:
         st.error("Format des plages horaires invalide. Utilisez le format hh-hh,hh-hh,...")
         write_log("Erreur : Format des plages horaires invalide.")
@@ -119,7 +119,7 @@ else:
     # Limiter aux jours de Lundi (0) à Dimanche (6)
     daily_data = daily_data.loc[daily_data.index.dayofweek < 7]
 
-    write_log(f"Données journalières calculées : {daily_data.to_string()}")
+    #write_log(f"Données journalières calculées : {daily_data.to_string()}")
 
     # Création de l'histogramme empilé
     write_log("Création de l'histogramme empilé...")
@@ -193,7 +193,7 @@ hourly_data = pd.concat(hourly_data, axis=1)
 
 # Garantir un ordre constant des colonnes
 hourly_data = hourly_data[[f"{start}h-{end}h" for start, end in parsed_time_ranges]]
-write_log(f"Données horaires par plage calculées : {hourly_data.to_string()}")
+#write_log(f"Données horaires par plage calculées : {hourly_data.to_string()}")
 
 # Palette de couleurs fixe pour chaque plage horaire
 color_mapping = {f"{start}h-{end}h": color for (start, end), color in zip(parsed_time_ranges, ["#636EFA", "#EF553B", "#00CC96", "#AB63FA", "#FFA15A"])}
