@@ -45,6 +45,9 @@ def authenticate(username, password, users):
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
     st.session_state.username = None
+if "username" not in st.session_state:
+    st.session_state.username = None
+
 
 # Gestion de l'authentification
 if not st.session_state.authenticated:
@@ -59,7 +62,9 @@ if not st.session_state.authenticated:
             st.session_state.authenticated = True
             st.session_state.username = username
             write_log(f"Connexion réussie : {username}")
-            st.experimental_rerun()
+            st.session_state.authenticated = True
+            st.session_state.username = username
+
         else:
             st.error("Nom d'utilisateur ou mot de passe incorrect.")
             write_log(f"Tentative de connexion échouée : {username}")
