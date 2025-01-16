@@ -108,14 +108,14 @@ write_log("Filtrage des données horaires pour la semaine sélectionnée...")
 filtered_data = df_hourly[(df_hourly["Semaine"] == week_number) & (df_hourly["Annee"] == year)]
 filtered_data = filtered_data[filtered_data["DateTime"].dt.hour >= start_hour]
 filtered_data = filtered_data[filtered_data["DateTime"] < (filtered_data["DateTime"].max() + timedelta(days=1))]
-write_log(f"Données horaires filtrées : {filtered_data.to_string()}")
+#write_log(f"Données horaires filtrées : {filtered_data.to_string()}")
 
 if filtered_data.empty:
     st.warning("Aucune donnée disponible pour la semaine sélectionnée.")
     write_log("Aucune donnée disponible pour la semaine sélectionnée.")
 else:
     # Ajuster les données pour refléter les jours de 5h à 5h (ou heure choisie)
-    write_log("Ajustement des données horaires pour le découpage des jours...")
+    #write_log("Ajustement des données horaires pour le découpage des jours...")
     filtered_data["Jour"] = (filtered_data["DateTime"] - pd.to_timedelta((filtered_data["DateTime"].dt.hour < start_hour).astype(int), unit="D")).dt.date
 
     # Exclure les colonnes non numériques et celles contenant "Cpt" pour l'agrégation
