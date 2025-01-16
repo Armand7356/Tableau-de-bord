@@ -31,11 +31,26 @@ def save_users(users):
     with open(users_file, "w") as f:
         json.dump(users, f)
 
+import socket
+from datetime import datetime
+import streamlit as st
+
+# Fonction pour obtenir l'adresse IP de l'utilisateur
+def get_user_ip():
+    try:
+        hostname = socket.gethostname()
+        return socket.gethostbyname(hostname)
+    except Exception as e:
+        return "IP inconnue"
+
 # Fonction pour écrire dans un fichier log
 def write_log(message):
+    user = st.session_state.get("username", "Utilisateur inconnu")
+    user_ip = get_user_ip()
     with open("log.txt", "a") as log_file:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log_file.write(f"{timestamp} - {message}\n")
+        log_file.write(f"{timestamp} - {user} ({user_ip}) - {message}\n")
+
 
 # Fonction d'authentification
 def authenticate(username, password, users):
