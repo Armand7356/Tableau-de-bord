@@ -62,8 +62,6 @@ if not st.session_state.authenticated:
             st.session_state.authenticated = True
             st.session_state.username = username
             write_log(f"Connexion réussie : {username}")
-            st.session_state.authenticated = True
-            st.session_state.username = username
 
         else:
             st.error("Nom d'utilisateur ou mot de passe incorrect.")
