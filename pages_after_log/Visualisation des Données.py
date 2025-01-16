@@ -9,12 +9,25 @@ from io import BytesIO
 from datetime import datetime, timedelta
 import locale
 
+# Fonction pour obtenir l'adresse IP de l'utilisateur
+def get_user_ip():
+    try:
+        hostname = socket.gethostname()
+        return socket.gethostbyname(hostname)
+    except Exception as e:
+        return "IP inconnue"
 
 # Fonction pour écrire dans un fichier log
 def write_log(message):
+    user = st.session_state.get("username", "Utilisateur inconnu")
+    user_ip = get_user_ip()
     with open("log.txt", "a") as log_file:
-        log_file.write(f"{datetime.now()} - {message}\n")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_file.write(f"{timestamp} - {user} ({user_ip}) - {message}\n")
         
+
+write_log("Page Visualisation des données")
+
 # Charger les données Excel
 write_log("Chargement du fichier Excel...")
 file_path = "tableau de bord Wit.xlsx"

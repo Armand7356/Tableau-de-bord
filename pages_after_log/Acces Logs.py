@@ -1,6 +1,22 @@
 import streamlit as st
 import os
 
+# Fonction pour obtenir l'adresse IP de l'utilisateur
+def get_user_ip():
+    try:
+        hostname = socket.gethostname()
+        return socket.gethostbyname(hostname)
+    except Exception as e:
+        return "IP inconnue"
+
+# Fonction pour écrire dans un fichier log
+def write_log(message):
+    user = st.session_state.get("username", "Utilisateur inconnu")
+    user_ip = get_user_ip()
+    with open("log.txt", "a") as log_file:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_file.write(f"{timestamp} - {user} ({user_ip}) - {message}\n")
+        
 # Chemin vers le fichier de log
 log_file_path = "log.txt"
 
@@ -12,6 +28,9 @@ if not os.path.exists(log_file_path):
 # Interface principale
 st.title("Accès aux Logs")
 st.write("Cette page permet de lire et de télécharger les fichiers de log.")
+
+write_log("Page Acces logs")
+
 
 # Bouton pour rafraîchir les logs
 if st.button("Rafraîchir les logs"):
