@@ -31,31 +31,42 @@ write_log(f"Aperçu des données horaires : {df_hourly.head().to_string()}")
 # Configurer la page
 st.title("Rapport Hebdomadaire - Électricité")
 
-# Sélection de la semaine
-current_date = datetime.now()
-default_start_date = (current_date - timedelta(days=current_date.weekday(), weeks=1)).date()
-week_number = st.number_input("Choisissez le numéro de la semaine :", value=default_start_date.isocalendar()[1], step=1)
-write_log(f"Numéro de la semaine sélectionnée : {week_number}")
-year = st.number_input("Choisissez l'année :", value=default_start_date.year, step=1)
-write_log(f"Année sélectionnée : {year}")
+# Create a horizontal layout for filters
+col1, col2, col3, col4 = st.columns([1.7, 1.2, 1.2, 2])
 
-# Choix de l'heure de début de journée
-start_hour = st.number_input("Heure de début de journée :", min_value=0, max_value=23, value=5, step=1)
-write_log(f"Heure de début de journée sélectionnée : {start_hour}")
+with col1:
 
-# Définir les plages horaires
-default_time_ranges = [(5, 16), (16, 21), (21, 5)]
-time_ranges = st.text_input(
-    "Définissez les plages horaires (format : hh-hh,hh-hh,...) :",
-    value=','.join([f"{start}-{end}" for start, end in default_time_ranges])
-)
-try:
-    parsed_time_ranges = [(int(start), int(end)) for start, end in (range_.split('-') for range_ in time_ranges.split(','))]
-    write_log(f"Plages horaires sélectionnées : {parsed_time_ranges}")
-except ValueError:
-    st.error("Format des plages horaires invalide. Utilisez le format hh-hh,hh-hh,...")
-    write_log("Erreur : Format des plages horaires invalide.")
-    parsed_time_ranges = default_time_ranges
+    # Sélection de la semaine
+    current_date = datetime.now()
+    default_start_date = (current_date - timedelta(days=current_date.weekday(), weeks=1)).date()
+    week_number = st.number_input("Choisissez le numéro de la semaine :", value=default_start_date.isocalendar()[1], step=1)
+    write_log(f"Numéro de la semaine sélectionnée : {week_number}")
+
+with col2:
+
+    year = st.number_input("Choisissez l'année :", value=default_start_date.year, step=1)
+    write_log(f"Année sélectionnée : {year}")
+
+with col3:
+
+    # Choix de l'heure de début de journée
+    start_hour = st.number_input("Heure de début de journée :", min_value=0, max_value=23, value=5, step=1)
+    write_log(f"Heure de début de journée sélectionnée : {start_hour}")
+with col4:
+    # Définir les plages horaires
+    default_time_ranges = [(5, 16), (16, 21), (21, 5)]
+    time_ranges = st.text_input(
+        "Définissez les plages horaires (format : hh-hh,hh-hh,...) :",
+        value=','.join([f"{start}-{end}" for start, end in default_time_ranges])
+    )
+    try:
+        parsed_time_ranges = [(int(start), int(end)) for start, end in (range_.split('-') for range_ in time_ranges.split(','))]
+        write_log(f"Plages horaires sélectionnées : {parsed_time_ranges}")
+    except ValueError:
+        st.error("Format des plages horaires invalide. Utilisez le format hh-hh,hh-hh,...")
+        write_log("Erreur : Format des plages horaires invalide.")
+        parsed_time_ranges = default_time_ranges
+
 
 # Fonction pour traiter les données et afficher les rapports
 
