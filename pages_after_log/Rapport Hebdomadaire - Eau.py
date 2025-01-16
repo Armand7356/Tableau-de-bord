@@ -124,7 +124,7 @@ else:
     # Création de l'histogramme empilé
     write_log("Création de l'histogramme empilé...")
     fig = go.Figure()
-    for col in ["Consomation eau ballon", "Consomation eau laveuse", "Consomation eau chauferie", "Consomation eau condenseur"]:
+    for col in ["Consomation eau ballon", "Consomation eau laveuse", "Consomation eau chaufferie", "Consomation eau condenseur"]:
         if col in daily_data.columns:
             fig.add_trace(go.Bar(
                 x=daily_data.index,
