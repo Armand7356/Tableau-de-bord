@@ -18,22 +18,24 @@ if st.button("Rafraîchir les logs"):
     st.experimental_rerun()
 
 # Lire le contenu du fichier de log
-st.write("### Contenu des Logs")
+st.write("### Les 500 dernières lignes des Logs")
 try:
     with open(log_file_path, "r") as log_file:
         logs = log_file.readlines()
         if logs:
-            st.text_area("Logs", value="".join(logs), height=400)
+            # Afficher uniquement les 500 dernières lignes
+            last_500_logs = logs[-500:] if len(logs) > 500 else logs
+            st.text_area("Logs (dernières 500 lignes)", value="".join(last_500_logs), height=400)
         else:
             st.info("Aucune entrée dans le fichier de log.")
 except Exception as e:
     st.error(f"Erreur lors de la lecture du fichier de log : {e}")
 
-# Option pour télécharger le fichier de log
+# Option pour télécharger le fichier complet
 st.write("### Télécharger les Logs")
 with open(log_file_path, "r") as log_file:
     st.download_button(
-        label="Télécharger le fichier de log",
+        label="Télécharger le fichier de log complet",
         data=log_file.read(),
         file_name="log.txt",
         mime="text/plain",
