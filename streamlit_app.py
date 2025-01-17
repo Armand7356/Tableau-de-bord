@@ -100,7 +100,7 @@ else:
 
     # Restreindre l'accès à certaines pages (exemple : "Gestion utilisateurs" uniquement pour Admin)
     if st.session_state.username != "Admin":
-        available_pages = [page for page in available_pages if page != "Gestion utilisateurs"]
+        available_pages = [page for page in available_pages if page != "Gestion utilisateurs" or page != "Acces Logs" ]
         
     # Sélection de la page via le menu de navigation
     selected_page = st.sidebar.radio("Choisissez une page", available_pages)
