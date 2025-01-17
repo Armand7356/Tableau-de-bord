@@ -94,7 +94,7 @@ def process_data_and_display_gas(df_hourly, week_number, year, start_hour, title
     filtered_data = df_hourly[(df_hourly["Semaine"] == week_number) & (df_hourly["Annee"] == year)]
     filtered_data = filtered_data[filtered_data["DateTime"].dt.hour >= start_hour]
     filtered_data = filtered_data[filtered_data["DateTime"] < (filtered_data["DateTime"].max() + timedelta(days=1))]
-    write_log(f"Données horaires filtrées : {filtered_data.to_string()}")
+    #write_log(f"Données horaires filtrées : {filtered_data.to_string()}")
 
     if filtered_data.empty:
         st.warning(f"Aucune donnée disponible pour {title_prefix} la semaine sélectionnée.")
