@@ -32,13 +32,13 @@ def write_log(message):
 write_log("Page Rapport hebdomadaire Gaz")
 
 # Charger les données Excel
-write_log("Chargement du fichier Excel...")
+#write_log("Chargement du fichier Excel...")
 file_path = "tableau de bord Wit.xlsx"
 data = pd.ExcelFile(file_path)
-write_log(f"Fichier chargé avec succès : {data.sheet_names}") 
+#write_log(f"Fichier chargé avec succès : {data.sheet_names}") 
 
 # Charger les données horaires
-write_log("Chargement des données horaires...")
+#write_log("Chargement des données horaires...")
 df_hourly = data.parse("Conso_h")
 #write_log(f"Aperçu des données horaires : {df_hourly.head().to_string()}")
 
@@ -54,18 +54,18 @@ with col1:
     current_date = datetime.now()
     default_start_date = (current_date - timedelta(days=current_date.weekday(), weeks=1)).date()
     week_number = st.number_input("Choisissez le numéro de la semaine :", value=default_start_date.isocalendar()[1], step=1)
-    write_log(f"Numéro de la semaine sélectionnée : {week_number}")
+    #write_log(f"Numéro de la semaine sélectionnée : {week_number}")
 
 with col2:
 
     year = st.number_input("Choisissez l'année :", value=default_start_date.year, step=1)
-    write_log(f"Année sélectionnée : {year}")
+    #write_log(f"Année sélectionnée : {year}")
 
 with col3:
 
     # Choix de l'heure de début de journée
     start_hour = st.number_input("Heure de début de journée :", min_value=0, max_value=23, value=5, step=1)
-    write_log(f"Heure de début de journée sélectionnée : {start_hour}")
+    #write_log(f"Heure de début de journée sélectionnée : {start_hour}")
 with col4:
     # Définir les plages horaires
     default_time_ranges = [(5, 16), (16, 21), (21, 5)]
@@ -78,19 +78,19 @@ with col4:
         #write_log(f"Plages horaires sélectionnées : {parsed_time_ranges}")
     except ValueError:
         st.error("Format des plages horaires invalide. Utilisez le format hh-hh,hh-hh,...")
-        write_log("Erreur : Format des plages horaires invalide.")
+        #write_log("Erreur : Format des plages horaires invalide.")
         parsed_time_ranges = default_time_ranges
 
 # Fonction pour traiter les données et afficher les rapports
 
 def process_data_and_display_gas(df_hourly, week_number, year, start_hour, title_prefix):
-    write_log("Conversion des dates horaires et ajout des colonnes Semaine et Annee...")
+    #write_log("Conversion des dates horaires et ajout des colonnes Semaine et Annee...")
     df_hourly["DateTime"] = pd.to_datetime(df_hourly["Date /h"], errors='coerce')
     df_hourly["Semaine"] = df_hourly["DateTime"].dt.isocalendar().week
     df_hourly["Annee"] = df_hourly["DateTime"].dt.year
-    write_log("Dates horaires converties avec succès.")
+    #write_log("Dates horaires converties avec succès.")
 
-    write_log("Filtrage des données horaires pour la semaine sélectionnée...")
+    #write_log("Filtrage des données horaires pour la semaine sélectionnée...")
     filtered_data = df_hourly[(df_hourly["Semaine"] == week_number) & (df_hourly["Annee"] == year)]
     filtered_data = filtered_data[filtered_data["DateTime"].dt.hour >= start_hour]
     filtered_data = filtered_data[filtered_data["DateTime"] < (filtered_data["DateTime"].max() + timedelta(days=1))]
@@ -98,11 +98,11 @@ def process_data_and_display_gas(df_hourly, week_number, year, start_hour, title
 
     if filtered_data.empty:
         st.warning(f"Aucune donnée disponible pour {title_prefix} la semaine sélectionnée.")
-        write_log(f"Aucune donnée disponible pour {title_prefix} la semaine sélectionnée.")
+        #write_log(f"Aucune donnée disponible pour {title_prefix} la semaine sélectionnée.")
         return
 
     # Ajuster les données pour refléter les jours de 5h à 5h (ou heure choisie)
-    write_log("Ajustement des données horaires pour le découpage des jours...")
+    #write_log("Ajustement des données horaires pour le découpage des jours...")
     filtered_data["Jour"] = (filtered_data["DateTime"] - pd.to_timedelta((filtered_data["DateTime"].dt.hour < start_hour).astype(int), unit="D")).dt.date
 
     # Exclure les colonnes non numériques et celles contenant "général" ou qui ne sont pas des consommations
@@ -121,7 +121,7 @@ def process_data_and_display_gas(df_hourly, week_number, year, start_hour, title
     #write_log(f"Données journalières calculées : {daily_data.to_string()}")
 
     # Création de l'histogramme empilé
-    write_log("Création de l'histogramme empilé...")
+    #write_log("Création de l'histogramme empilé...")
     fig = go.Figure()
     for col in numeric_columns:
         fig.add_trace(go.Bar(

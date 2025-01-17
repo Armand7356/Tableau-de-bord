@@ -47,14 +47,14 @@ def write_log(message):
 write_log("Page Rapport hebdomadaire EAU")
 
 # Charger les données Excel
-write_log("Chargement du fichier Excel...")
+#write_log("Chargement du fichier Excel...")
 file_path = "tableau de bord Wit.xlsx"
 data = pd.ExcelFile(file_path)
-write_log(f"Fichier chargé avec succès : {data.sheet_names}")
+#write_log(f"Fichier chargé avec succès : {data.sheet_names}")
 
 
 # Charger les données horaires
-write_log("Chargement des données horaires...")
+#write_log("Chargement des données horaires...")
 df_hourly = data.parse("Conso_h")
 #write_log(f"Aperçu des données horaires : {df_hourly.head().to_string()}")
 
@@ -70,18 +70,18 @@ with col1:
     current_date = datetime.now()
     default_start_date = (current_date - timedelta(days=current_date.weekday(), weeks=1)).date()
     week_number = st.number_input("Choisissez le numéro de la semaine :", value=default_start_date.isocalendar()[1], step=1)
-    write_log(f"Numéro de la semaine sélectionnée : {week_number}")
+    #write_log(f"Numéro de la semaine sélectionnée : {week_number}")
 
 with col2:
 
     year = st.number_input("Choisissez l'année :", value=default_start_date.year, step=1)
-    write_log(f"Année sélectionnée : {year}")
+    #write_log(f"Année sélectionnée : {year}")
 
 with col3:
 
     # Choix de l'heure de début de journée
     start_hour = st.number_input("Heure de début de journée :", min_value=0, max_value=23, value=5, step=1)
-    write_log(f"Heure de début de journée sélectionnée : {start_hour}")
+    #write_log(f"Heure de début de journée sélectionnée : {start_hour}")
 with col4:
     # Définir les plages horaires
     default_time_ranges = [(5, 16), (16, 21), (21, 5)]
@@ -94,17 +94,17 @@ with col4:
         #write_log(f"Plages horaires sélectionnées : {parsed_time_ranges}")
     except ValueError:
         st.error("Format des plages horaires invalide. Utilisez le format hh-hh,hh-hh,...")
-        write_log("Erreur : Format des plages horaires invalide.")
+        #write_log("Erreur : Format des plages horaires invalide.")
         parsed_time_ranges = default_time_ranges
 
 # Filtrer les données horaires pour la semaine sélectionnée
-write_log("Conversion des dates horaires et ajout des colonnes Semaine et Annee...")
+#write_log("Conversion des dates horaires et ajout des colonnes Semaine et Annee...")
 df_hourly["DateTime"] = pd.to_datetime(df_hourly["Date /h"], errors='coerce')
 df_hourly["Semaine"] = df_hourly["DateTime"].dt.isocalendar().week
 df_hourly["Annee"] = df_hourly["DateTime"].dt.year
-write_log("Dates horaires converties avec succès.")
+#write_log("Dates horaires converties avec succès.")
 
-write_log("Filtrage des données horaires pour la semaine sélectionnée...")
+#write_log("Filtrage des données horaires pour la semaine sélectionnée...")
 filtered_data = df_hourly[(df_hourly["Semaine"] == week_number) & (df_hourly["Annee"] == year)]
 filtered_data = filtered_data[filtered_data["DateTime"].dt.hour >= start_hour]
 filtered_data = filtered_data[filtered_data["DateTime"] < (filtered_data["DateTime"].max() + timedelta(days=1))]
@@ -112,7 +112,7 @@ filtered_data = filtered_data[filtered_data["DateTime"] < (filtered_data["DateTi
 
 if filtered_data.empty:
     st.warning("Aucune donnée disponible pour la semaine sélectionnée.")
-    write_log("Aucune donnée disponible pour la semaine sélectionnée.")
+    #write_log("Aucune donnée disponible pour la semaine sélectionnée.")
 else:
     # Ajuster les données pour refléter les jours de 5h à 5h (ou heure choisie)
     #write_log("Ajustement des données horaires pour le découpage des jours...")
@@ -133,7 +133,7 @@ else:
     #write_log(f"Données journalières calculées : {daily_data.to_string()}")
 
     # Création de l'histogramme empilé
-    write_log("Création de l'histogramme empilé...")
+    #write_log("Création de l'histogramme empilé...")
     fig = go.Figure()
     for col in ["Consomation eau ballon", "Consomation eau laveuse", "Consomation eau chaufferie", "Consomation eau condenseur"]:
         if col in daily_data.columns:
@@ -184,7 +184,7 @@ else:
     st.dataframe(filtered_table)
 
 # Créer les colonnes pour les plages horaires
-write_log("Calcul des consommations par plages horaires...")
+#write_log("Calcul des consommations par plages horaires...")
 hourly_data = []
 for start, end in parsed_time_ranges:
     col_name = f"{start}h-{end}h"
@@ -210,7 +210,7 @@ hourly_data = hourly_data[[f"{start}h-{end}h" for start, end in parsed_time_rang
 color_mapping = {f"{start}h-{end}h": color for (start, end), color in zip(parsed_time_ranges, ["#636EFA", "#EF553B", "#00CC96", "#AB63FA", "#FFA15A"])}
 
 # Création des diagrammes en cercle pour chaque jour
-write_log("Création des diagrammes en cercle pour chaque jour...")
+#write_log("Création des diagrammes en cercle pour chaque jour...")
 day_charts = st.columns(4)
 for i, (day, day_data) in enumerate(hourly_data.iterrows()):
     fig = go.Figure()
@@ -228,7 +228,7 @@ for i, (day, day_data) in enumerate(hourly_data.iterrows()):
     day_charts[i % 4].plotly_chart(fig, use_container_width=True)
 
 # Création du diagramme en cercle pour la semaine entière
-write_log("Création du diagramme en cercle pour la semaine entière...")
+#write_log("Création du diagramme en cercle pour la semaine entière...")
 weekly_totals = hourly_data.sum()
 fig_weekly = go.Figure()
 fig_weekly.add_trace(go.Pie(

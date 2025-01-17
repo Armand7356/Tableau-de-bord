@@ -29,10 +29,10 @@ def write_log(message):
 write_log("Page Visualisation des données")
 
 # Charger les données Excel
-write_log("Chargement du fichier Excel...")
+#write_log("Chargement du fichier Excel...")
 file_path = "tableau de bord Wit.xlsx"
 data = pd.ExcelFile(file_path)
-write_log(f"Fichier chargé avec succès : {data.sheet_names}")
+#write_log(f"Fichier chargé avec succès : {data.sheet_names}")
 
 # Load data from specific sheets
 hourly_data = data.parse('Conso_h')

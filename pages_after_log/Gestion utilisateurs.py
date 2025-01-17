@@ -78,7 +78,7 @@ if st.session_state.username == "Admin":
             users[new_username] = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
             save_users(users)
             st.success(f"Utilisateur {new_username} ajouté.")
-            write_log(f"Utilisateur {new_username} ajouté par Admin.")
+            #write_log(f"Utilisateur {new_username} ajouté par Admin.")
 
     # Supprimer un utilisateur
     st.write("### Supprimer un utilisateur")
@@ -88,7 +88,7 @@ if st.session_state.username == "Admin":
             del users[delete_username]
             save_users(users)
             st.success(f"Utilisateur {delete_username} supprimé.")
-            write_log(f"Utilisateur {delete_username} supprimé par Admin.")
+            #write_log(f"Utilisateur {delete_username} supprimé par Admin.")
 
     # Modifier un mot de passe
     st.write("### Modifier un mot de passe")
@@ -99,4 +99,4 @@ if st.session_state.username == "Admin":
             users[user_to_update] = bcrypt.hashpw(new_password_update.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
             save_users(users)
             st.success(f"Mot de passe pour {user_to_update} mis à jour.")
-            write_log(f"Mot de passe pour {user_to_update} modifié par Admin.")
+            #write_log(f"Mot de passe pour {user_to_update} modifié par Admin.")
