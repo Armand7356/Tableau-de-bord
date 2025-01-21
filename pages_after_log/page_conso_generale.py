@@ -60,7 +60,7 @@ if timeframe != "Jour":
     filtered_data = filtered_data[(filtered_data["Consomation eau général"] > 0) | (filtered_data["Consomation gaz général"] > 0) | (filtered_data["Consomation elec général"] > 0)]
 
 # Ajouter les colonnes nécessaires
-filtered_data = filtered_data["Jour", "Consomation eau général", "Consomation gaz général", "Consomation elec général"]
+filtered_data = filtered_data[["Jour", "Consomation eau général", "Consomation gaz général", "Consomation elec général"]]
 
 # Graphique avec deux échelles (m³ pour l'eau, kWh pour gaz et électricité)
 fig = go.Figure()
