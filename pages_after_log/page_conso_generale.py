@@ -63,44 +63,52 @@ if timeframe != "Jour":
 filtered_data = filtered_data[["Jour", "Consomation eau général", "Consomation gaz général", "Consomation elec général"]]
 
 # Graphique avec deux échelles (m³ pour l'eau, kWh pour gaz et électricité)
-fig = go.Figure(layout=dict(yaxis2=dict(
-    title="Consommation Eau (m³)",
-    titlefont=dict(color="blue"),
-    overlaying="y",
-    side="right"
-)))
+fig = go.Figure()
+
 variables = ["Consomation eau général", "Consomation gaz général", "Consomation elec général"]
 colors = ["blue", "green", "orange"]
 units = ["m³", "kWh", "kWh"]
 
 for var, color, unit in zip(variables, colors, units):
-    filtered_series = filtered_data[var][filtered_data[var] > 0] if timeframe != "Jour" else filtered_data[var]
+    axis = "y" if var != "Consomation eau général" else "y2"  # Utiliser y2 pour l'eau
     fig.add_trace(go.Scatter(
         x=filtered_data[date_col],
         y=filtered_data[var],
         mode="lines+markers",
         name=f"{var} ({unit})",
-        line=dict(color=color)
+        line=dict(color=color),
+        yaxis=axis  # Spécifier l'axe
     ))
 
 # Ajouter une courbe de tendance linéaire pour chaque variable
 for var, color, unit in zip(variables, colors, units):
     slope, intercept, _, _, _ = linregress(range(len(filtered_data)), filtered_data[var])
     trendline = [slope * x + intercept for x in range(len(filtered_data))]
+    axis = "y" if var != "Consomation eau général" else "y2"  # Utiliser y2 pour l'eau
     fig.add_trace(go.Scatter(
         x=filtered_data[date_col],
         y=trendline,
         mode="lines",
         name=f"Tendance {var} ({unit})",
-        line=dict(dash="dash", color=color)
+        line=dict(dash="dash", color=color),
+        yaxis=axis  # Spécifier l'axe
     ))
 
 # Configurer l'axe secondaire
 fig.update_layout(
     title="Consommation Générale avec Courbes de Tendance",
     xaxis_title="Date",
-    yaxis=dict(title="Consommation Eau (m³)", titlefont=dict(color="blue")),
-    yaxis2=dict(title="Consommation Gaz/Élec (kWh)", titlefont=dict(color="orange"), overlaying="y", side="right"),
+    yaxis=dict(
+        title="Consommation Gaz/Élec (kWh)",
+        titlefont=dict(color="orange"),
+        side="left"
+    ),
+    yaxis2=dict(
+        title="Consommation Eau (m³)",
+        titlefont=dict(color="blue"),
+        overlaying="y",
+        side="right"
+    ),
     legend=dict(orientation="h"),
 )
 
