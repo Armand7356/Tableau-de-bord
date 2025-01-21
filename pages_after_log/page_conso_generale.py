@@ -17,7 +17,6 @@ def load_data(file_path):
 file_path = "tableau de bord Wit.xlsx"
 hourly_data, daily_data, weekly_data = load_data(file_path)
 
-
 # Page principale
 st.title("Consommation Générale")
 st.write("Visualisation des consommations générales (eau, électricité, gaz)")
@@ -30,8 +29,7 @@ with col1:
 with col2:
     start_date = st.date_input("Début", value=daily_data['Jour'].min())
 with col3:
-    end_date = st.date_input("Fin", value=daily_data['Jour'].max())
-
+    end_date = st.date_input("Fin", value=min(daily_data['Jour'].max(), datetime.today().date())), datetime.today().date()))
 
 # Sélection des données selon la temporisation
 if timeframe == "Jour":
@@ -55,6 +53,14 @@ st.write("Colonnes disponibles :", df.columns)
 # Filtrer les données selon la plage de dates
 filtered_data = df[(df[date_col] >= pd.to_datetime(start_date)) & (df[date_col] <= pd.to_datetime(end_date))]
 
+# Supprimer les valeurs à zéro, sauf si la temporisation est "Jour"
+if timeframe != "Jour":
+    filtered_data = filtered_data[(filtered_data["Consomation eau général"] > 0) | (filtered_data["Consomation gaz général"] > 0) | (filtered_data["Consomation elec général"] > 0)]
+
+# Supprimer les valeurs à zéro, sauf si la temporisation est "Jour"
+if timeframe != "Jour":
+    filtered_data = filtered_data[(filtered_data["Consomation eau général"] > 0) | (filtered_data["Consomation gaz général"] > 0) | (filtered_data["Consomation elec général"] > 0)]
+
 # Ajouter les colonnes nécessaires
 filtered_data = filtered_data[["Jour", "Consomation eau général", "Consomation gaz général", "Consomation elec général"]]
 
@@ -65,6 +71,7 @@ colors = ["blue", "green", "orange"]
 units = ["m³", "kWh", "kWh"]
 
 for var, color, unit in zip(variables, colors, units):
+    filtered_series = filtered_data[var][filtered_data[var] > 0] if timeframe != "Jour" else filtered_data[var]
     fig.add_trace(go.Scatter(
         x=filtered_data[date_col],
         y=filtered_data[var],
