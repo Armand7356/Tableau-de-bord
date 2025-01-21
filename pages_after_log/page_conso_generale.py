@@ -118,7 +118,7 @@ fig.update_layout(
         overlaying="y",
         side="right",
         showgrid=False,  # Supprimer la grille pour éviter les conflits
-        range=[0, max(filtered_data["Consomation eau général"]) * 0.1 * 1.2]  # Ajuster l'échelle secondaire
+        range=[0, max(filtered_data["Consomation eau général"]) * 0.1 * 1]  # Ajuster l'échelle secondaire
     ),
     legend=dict(orientation="h"),
 )
