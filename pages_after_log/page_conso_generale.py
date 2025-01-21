@@ -29,7 +29,7 @@ with col1:
 with col2:
     start_date = st.date_input("Début", value=daily_data['Jour'].min())
 with col3:
-    end_date = st.date_input("Fin", value=min(daily_data['Jour'].max(), datetime.today().date())), datetime.today().date()))
+    end_date = st.date_input("Fin", value=min(daily_data['Jour'].max(), datetime.today().date(), datetime.today().date()))
 
 # Sélection des données selon la temporisation
 if timeframe == "Jour":
