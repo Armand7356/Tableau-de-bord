@@ -106,7 +106,7 @@ y1_min, y1_max = 0, max(filtered_data[["Consomation gaz général", "Consomation
 
 # Calcul des tailles de grille
 y1_dtick = (y1_max - y1_min) / 10  # 10 intervalles pour l'axe principal
-y2_dtick = (y1_max - y1_min) / 100  # 10 intervalles pour l'axe principal
+y2_dtick = (y1_max - y1_min) / 1000  # 10 intervalles pour l'axe principal
 
 # Appliquer les bornes et les grilles
 fig.update_layout(
@@ -121,7 +121,7 @@ fig.update_layout(
         titlefont=dict(color="blue"),
         overlaying="y",
         side="right",
-        range=[0, y1_max*0.1 * 1.1]
+        range=[0, y1_max*0.01 * 1.1]
     )
 )
 
