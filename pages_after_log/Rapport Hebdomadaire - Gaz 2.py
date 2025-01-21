@@ -59,7 +59,7 @@ df_hourly = data.parse("Conso_h")
 #write_log(f"Aperçu des données horaires : {df_hourly.head().to_string()}")
 
 # Configurer la page
-st.title("Rapport Hebdomadaire - EAU")
+st.title("Rapport Hebdomadaire - Gaz")
 
 # Create a horizontal layout for filters
 col1, col2, col3, col4 = st.columns([1.7, 1.2, 1.2, 2])
@@ -121,7 +121,7 @@ else:
     # Exclure les colonnes non numériques et celles contenant "Cpt" pour l'agrégation
     numeric_columns = filtered_data.select_dtypes(include=['number']).columns
     numeric_columns = [col for col in numeric_columns if "Cpt" not in col]
-    numeric_columns = [col for col in numeric_columns if "eau" in col.lower()]
+    numeric_columns = [col for col in numeric_columns if "gaz" in col.lower()]
     daily_data = filtered_data.groupby("Jour")[numeric_columns].sum()
 
     # S'assurer que l'index est au format datetime
@@ -135,7 +135,7 @@ else:
     # Création de l'histogramme empilé
     #write_log("Création de l'histogramme empilé...")
     fig = go.Figure()
-    for col in ["Consomation eau ballon", "Consomation eau laveuse", "Consomation eau chaufferie", "Consomation eau condenseur"]:
+    for col in ["Consomation gaz chaudiere 1", "Consomation gaz chaudiere 2"]:
         if col in daily_data.columns:
             fig.add_trace(go.Bar(
                 x=daily_data.index,
@@ -146,17 +146,16 @@ else:
 
 
     # Ajouter une colonne "Autres"
-    if "Consomation eau général" in daily_data.columns:
-        daily_data["eau Autres"] = daily_data["Consomation eau général"] - (
-            daily_data.get("Consomation eau ballon", 0) +
-            daily_data.get("Consomation eau laveuse", 0) +
-            daily_data.get("Consomation eau chauferie", 0)
+    if "Consomation gaz général" in daily_data.columns:
+        daily_data["gaz Autres"] = daily_data["Consomation gaz général"] - (
+            daily_data.get("Consomation gaz chaudiere 1", 0) +
+            daily_data.get("Consomation gaz chaudiere 2", 0) +
         ).clip(lower=0)
             
         
         fig.add_trace(go.Bar(
             x=daily_data.index,
-            y=daily_data["eau Autres"],
+            y=daily_data["gaz Autres"],
             name="Autres"
         ))
 
@@ -164,7 +163,7 @@ else:
     fig.update_layout(
         template="plotly_white",
         barmode="stack",
-        title=f"Consommation Générale d'Eau - Semaine {week_number} {year}",
+        title=f"Consommation Générale de Gaz - Semaine {week_number} {year}",
         xaxis_title="Jour",
         yaxis_title="Consommation (m³)",
         legend_title="Catégories",
@@ -172,7 +171,7 @@ else:
     st.plotly_chart(fig, use_container_width=True)
 
     # Ajouter un filtre pour n'afficher que les colonnes contenant "eau"
-    filtered_columns = [col for col in daily_data.columns if "eau" in col.lower()]
+    filtered_columns = [col for col in daily_data.columns if "gaz" in col.lower()]
     filtered_table = daily_data[filtered_columns]
 
     # Ajouter les lignes moyenne et somme au tableau des données filtrées
