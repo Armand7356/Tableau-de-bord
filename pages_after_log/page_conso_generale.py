@@ -60,7 +60,7 @@ if timeframe != "Jour":
     filtered_data = filtered_data[(filtered_data["Consomation eau général"] > 0) | (filtered_data["Consomation gaz général"] > 0) | (filtered_data["Consomation elec général"] > 0)]
 
 # Ajouter les colonnes nécessaires
-filtered_data = filtered_data[["Jour", "Consomation eau général", "Consomation gaz général", "Consomation elec général"]]
+filtered_data = filtered_data["Jour", "Consomation eau général", "Consomation gaz général", "Consomation elec général"]
 
 # Graphique avec deux échelles (m³ pour l'eau, kWh pour gaz et électricité)
 fig = go.Figure()
@@ -71,9 +71,10 @@ units = ["m³", "kWh", "kWh"]
 
 for var, color, unit in zip(variables, colors, units):
     axis = "y" if var != "Consomation eau général" else "y2"  # Utiliser y2 pour l'eau
+    scaling_factor = 1 if var != "Consomation eau général" else 0.1
     fig.add_trace(go.Scatter(
         x=filtered_data[date_col],
-        y=filtered_data[var],
+        y=filtered_data[var] * scaling_factor,
         mode="lines+markers",
         name=f"{var} ({unit})",
         line=dict(color=color),
@@ -82,7 +83,8 @@ for var, color, unit in zip(variables, colors, units):
 
 # Ajouter une courbe de tendance linéaire pour chaque variable
 for var, color, unit in zip(variables, colors, units):
-    slope, intercept, _, _, _ = linregress(range(len(filtered_data)), filtered_data[var])
+    scaling_factor = 1 if var != "Consomation eau général" else 0.1
+    slope, intercept, _, _, _ = linregress(range(len(filtered_data)), filtered_data[var] * scaling_factor)
     trendline = [slope * x + intercept for x in range(len(filtered_data))]
     axis = "y" if var != "Consomation eau général" else "y2"  # Utiliser y2 pour l'eau
     fig.add_trace(go.Scatter(
