@@ -149,7 +149,7 @@ else:
     if "Consomation gaz général" in daily_data.columns:
         daily_data["gaz Autres"] = daily_data["Consomation gaz général"] - (
             daily_data.get("Consomation gaz chaudiere 1", 0) +
-            daily_data.get("Consomation gaz chaudiere 2", 0) +
+            daily_data.get("Consomation gaz chaudiere 2", 0)
         ).clip(lower=0)
             
         
