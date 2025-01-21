@@ -16,7 +16,7 @@ def load_data(file_path):
 # Charger les données
 file_path = "tableau de bord Wit.xlsx"
 hourly_data, daily_data, weekly_data = load_data(file_path)
-st.write("Colonnes disponibles :", df.columns)
+
 
 # Page principale
 st.title("Consommation Générale")
@@ -32,6 +32,7 @@ with col2:
 with col3:
     end_date = st.date_input("Fin", value=daily_data['Jour'].max())
 
+
 # Sélection des données selon la temporisation
 if timeframe == "Semaine":
     df = weekly_data
@@ -45,6 +46,8 @@ elif timeframe == "Année":
 else:  # Tout
     df = daily_data
     date_col = "Jour"
+
+st.write("Colonnes disponibles :", df.columns)
 
 # Filtrer les données selon la plage de dates
 filtered_data = df[(df[date_col] >= pd.to_datetime(start_date)) & (df[date_col] <= pd.to_datetime(end_date))]
