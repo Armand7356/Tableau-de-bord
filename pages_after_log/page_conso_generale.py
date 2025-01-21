@@ -29,7 +29,7 @@ with col1:
 with col2:
     start_date = st.date_input("Début", value=daily_data['Jour'].min())
 with col3:
-    end_date = st.date_input("Fin", value=min(daily_data['Jour'].max(), datetime.today().date(), datetime.today().date()))
+    end_date = st.date_input("Fin", value=min(daily_data['Jour'].max().date(), datetime.today().date())))
 
 # Sélection des données selon la temporisation
 if timeframe == "Jour":
@@ -51,7 +51,7 @@ else:  # Tout
 st.write("Colonnes disponibles :", df.columns)
 
 # Filtrer les données selon la plage de dates
-filtered_data = df[(df[date_col] >= pd.to_datetime(start_date)) & (df[date_col] <= pd.to_datetime(end_date))]
+filtered_data = df[(df[date_col] >= pd.Timestamp(start_date)) & (df[date_col] <= pd.Timestamp(end_date))]
 
 # Supprimer les valeurs à zéro, sauf si la temporisation est "Jour"
 if timeframe != "Jour":
