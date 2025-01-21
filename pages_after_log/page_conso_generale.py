@@ -48,7 +48,6 @@ else:  # Tout
     df = daily_data
     date_col = "Jour"
 
-
 # Filtrer les données selon la plage de dates
 filtered_data = df[(df[date_col] >= pd.Timestamp(start_date)) & (df[date_col] <= pd.Timestamp(end_date))]
 
@@ -64,7 +63,12 @@ if timeframe != "Jour":
 filtered_data = filtered_data[["Jour", "Consomation eau général", "Consomation gaz général", "Consomation elec général"]]
 
 # Graphique avec deux échelles (m³ pour l'eau, kWh pour gaz et électricité)
-fig = go.Figure()
+fig = go.Figure(layout=dict(yaxis2=dict(
+    title="Consommation Eau (m³)",
+    titlefont=dict(color="blue"),
+    overlaying="y",
+    side="right"
+)))
 variables = ["Consomation eau général", "Consomation gaz général", "Consomation elec général"]
 colors = ["blue", "green", "orange"]
 units = ["m³", "kWh", "kWh"]
@@ -94,6 +98,9 @@ for var, color, unit in zip(variables, colors, units):
 # Configurer l'axe secondaire
 fig.update_layout(
     title="Consommation Générale avec Courbes de Tendance",
+    xaxis_title="Date",
+    yaxis=dict(title="Consommation Gaz/Élec (kWh)", titlefont=dict(color="orange")),
+    legend=dict(orientation="h")
     xaxis_title="Date",
     yaxis=dict(title="Consommation Eau (m³)", titlefont=dict(color="blue")),
     yaxis2=dict(title="Consommation Gaz/Élec (kWh)", titlefont=dict(color="orange"), overlaying="y", side="right"),
