@@ -76,7 +76,7 @@ units = ["m³", "kWh", "kWh"]
 # Tracer les séries de données avec ajustement des échelles
 for var, color, unit in zip(variables, colors, units):
     axis = "y" if var != "Consomation eau général" else "y2"  # Utiliser y2 pour l'eau
-    scaling_factor = 1 if var != "Consomation eau général" else 0.1  # Échelle pour l'eau
+    scaling_factor = 1 if var != "Consomation eau général" else 1  # Échelle pour l'eau
     fig.add_trace(go.Scatter(
         x=filtered_data[date_col],
         y=filtered_data[var] * scaling_factor,  # Ajuster les valeurs en fonction de l'échelle
