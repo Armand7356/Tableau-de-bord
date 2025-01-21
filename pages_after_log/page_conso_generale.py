@@ -26,7 +26,7 @@ st.write("Visualisation des consommations générales (eau, électricité, gaz)"
 col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1.5])
 
 with col1:
-    timeframe = st.selectbox("Temporisation", ["Semaine", "Mois", "Année", "Tout"])
+    timeframe = st.selectbox("Temporisation", ["Jour","Semaine", "Mois", "Année", "Tout"])
 with col2:
     start_date = st.date_input("Début", value=daily_data['Jour'].min())
 with col3:
@@ -34,7 +34,10 @@ with col3:
 
 
 # Sélection des données selon la temporisation
-if timeframe == "Semaine":
+if timeframe == "Jour":
+    df = daily_data.resample('D', on="Jour").sum().reset_index()
+    date_col = "Jour"
+elif timeframe == "Semaine":
     df = daily_data.resample('W', on="Jour").sum().reset_index()
     date_col = "Jour"
 elif timeframe == "Mois":
