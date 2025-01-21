@@ -184,9 +184,9 @@ filtered_columns = [col for col in daily_data.columns if "gaz" in col.lower()]
 filtered_table = daily_data[filtered_columns]
 
 # Ajouter les lignes moyenne et somme au tableau des données filtrées
-filtered_table.loc['Moyenne'] = filtered_table.mean()
-filtered_table.loc['Somme'] = filtered_table.sum()-filtered_table.loc['Moyenne']
-filtered_table.loc['Prix'] = filtered_table.loc['Somme']*Prix_gaz
+filtered_table.loc['Moyenne'] = filtered_table.mean().astype(int)
+filtered_table.loc['Somme'] = filtered_table.sum().astype(int)-filtered_table.loc['Moyenne']
+filtered_table.loc['Prix'] = filtered_table.loc['Somme']*Prix_gaz.astype(int)
 
 # Afficher le tableau des valeurs de consommation pour la semaine
 st.write("### Données de consommation sur la semaine")

@@ -108,7 +108,7 @@ else:
            columns_with_units = [f"{col} ({units[col]})" for col in columns]
     
            # Calcul des statistiques
-           stats = round(filtered_data[columns].describe().T[['mean', 'std', 'min', 'max']],1)  #.astype(int)
+           stats = round(filtered_data[columns].describe().T[['mean', 'std', 'min', 'max']],1).astype(int)
            stats['Date min'] = [
                filtered_data.loc[filtered_data[col].idxmin(), date_col] if not filtered_data[col].isnull().all() else None
                for col in columns
