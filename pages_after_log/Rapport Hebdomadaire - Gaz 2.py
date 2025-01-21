@@ -179,18 +179,18 @@ with col11:
     Prix_gaz = 0.20
     Prix_gaz = st.number_input("Prix gaz (€/kWh)", value=0.2, step=0.01)
 
-    # Ajouter un filtre pour n'afficher que les colonnes contenant "gaz"
-    filtered_columns = [col for col in daily_data.columns if "gaz" in col.lower()]
-    filtered_table = daily_data[filtered_columns]
+# Ajouter un filtre pour n'afficher que les colonnes contenant "gaz"
+filtered_columns = [col for col in daily_data.columns if "gaz" in col.lower()]
+filtered_table = daily_data[filtered_columns]
 
-    # Ajouter les lignes moyenne et somme au tableau des données filtrées
-    filtered_table.loc['Moyenne'] = filtered_table.mean()
-    filtered_table.loc['Somme'] = filtered_table.sum()-filtered_table.loc['Moyenne']
-    filtered_table.loc['Prix'] = filtered_table.loc['Somme']*Prix_gaz
+# Ajouter les lignes moyenne et somme au tableau des données filtrées
+filtered_table.loc['Moyenne'] = filtered_table.mean()
+filtered_table.loc['Somme'] = filtered_table.sum()-filtered_table.loc['Moyenne']
+filtered_table.loc['Prix'] = filtered_table.loc['Somme']*Prix_gaz
 
-    # Afficher le tableau des valeurs de consommation pour la semaine
-    st.write("### Données de consommation sur la semaine")
-    st.dataframe(filtered_table)
+# Afficher le tableau des valeurs de consommation pour la semaine
+st.write("### Données de consommation sur la semaine")
+st.dataframe(filtered_table)
 
 # Créer les colonnes pour les plages horaires
 #write_log("Calcul des consommations par plages horaires...")
