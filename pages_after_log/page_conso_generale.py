@@ -101,27 +101,30 @@ for var, color, unit in zip(variables, colors, units):
         yaxis=axis
     ))
 
-# Configurer l'axe secondaire
+# Calcul automatique des bornes
+y1_min, y1_max = 0, max(filtered_data[["Consomation gaz général", "Consomation elec général"]].max())
+
+# Calcul des tailles de grille
+y1_dtick = (y1_max - y1_min) / 10  # 10 intervalles pour l'axe principal
+y2_dtick = (y1_max - y1_min) / 100  # 10 intervalles pour l'axe principal
+
+# Appliquer les bornes et les grilles
 fig.update_layout(
-    title="Consommation Générale avec Courbes de Tendance",
-    xaxis_title="Date",
     yaxis=dict(
         title="Consommation Gaz/Élec (kWh)",
         titlefont=dict(color="orange"),
         side="left",
-        showgrid=True,  # Assurer une grille alignée
-        range=[0, max(filtered_data["Consomation elec général"]) * 1.1]
+        range=[0, y1_max * 1.1]  # Ajouter une marge de 10 %
     ),
     yaxis2=dict(
         title="Consommation Eau (m³)",
         titlefont=dict(color="blue"),
         overlaying="y",
         side="right",
-        showgrid=False,  # Supprimer la grille pour éviter les conflits
-        range=[0, max(filtered_data["Consomation eau général"])]  # Ajuster l'échelle secondaire
-    ),
-    legend=dict(orientation="h"),
+        range=[0, y1_max*0.1 * 1.1]
+    )
 )
+
 
 st.plotly_chart(fig, use_container_width=True)
 
@@ -156,3 +159,6 @@ st.download_button(
     file_name="consommation_generale.csv",
     mime="text/csv"
 )
+
+
+
