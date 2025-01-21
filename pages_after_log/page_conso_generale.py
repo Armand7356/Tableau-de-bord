@@ -88,7 +88,7 @@ for var, color, unit in zip(variables, colors, units):
 
 # Ajouter une courbe de tendance linéaire pour chaque variable
 for var, color, unit in zip(variables, colors, units):
-    scaling_factor = 1 if var != "Consomation eau général" else 0.1
+    scaling_factor = 1 if var != "Consomation eau général" else 1
     slope, intercept, _, _, _ = linregress(range(len(filtered_data)), filtered_data[var] * scaling_factor)
     trendline = [slope * x + intercept for x in range(len(filtered_data))]
     axis = "y" if var != "Consomation eau général" else "y2"
