@@ -6,11 +6,12 @@ import numpy as np
 from datetime import datetime
 
 # Fonction pour charger les données
+# Charge les données des différentes feuilles d'un fichier Excel
 def load_data(file_path):
     data = pd.ExcelFile(file_path)
-    hourly_data = data.parse('Conso_h')
-    daily_data = data.parse('Conso_jour')
-    weekly_data = data.parse('Conso_semaine')
+    hourly_data = data.parse('Conso_h')  # Consommation horaire
+    daily_data = data.parse('Conso_jour')  # Consommation journalière
+    weekly_data = data.parse('Conso_semaine')  # Consommation hebdomadaire
     return hourly_data, daily_data, weekly_data
 
 # Charger les données
@@ -22,6 +23,7 @@ st.title("Consommation Générale")
 st.write("Visualisation des consommations générales (eau, électricité, gaz)")
 
 # Filtres
+# Permet de sélectionner la temporalité et la plage de dates
 col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1.5])
 
 with col1:
@@ -33,27 +35,28 @@ with col3:
 
 # Sélection des données selon la temporisation
 if timeframe == "Jour":
+    # Regrouper les données par jour
     df = daily_data.resample('D', on="Jour").sum().reset_index()
     date_col = "Jour"
 elif timeframe == "Semaine":
+    # Regrouper les données par semaine
     df = daily_data.resample('W', on="Jour").sum().reset_index()
     date_col = "Jour"
 elif timeframe == "Mois":
+    # Regrouper les données par mois
     df = daily_data.resample('M', on="Jour").sum().reset_index()
     date_col = "Jour"
 elif timeframe == "Année":
+    # Regrouper les données par année
     df = daily_data.resample('Y', on="Jour").sum().reset_index()
     date_col = "Jour"
 else:  # Tout
+    # Toutes les données sans regroupement
     df = daily_data
     date_col = "Jour"
 
 # Filtrer les données selon la plage de dates
 filtered_data = df[(df[date_col] >= pd.Timestamp(start_date)) & (df[date_col] <= pd.Timestamp(end_date))]
-
-# Supprimer les valeurs à zéro, sauf si la temporisation est "Jour"
-if timeframe != "Jour":
-    filtered_data = filtered_data[(filtered_data["Consomation eau général"] > 0) | (filtered_data["Consomation gaz général"] > 0) | (filtered_data["Consomation elec général"] > 0)]
 
 # Supprimer les valeurs à zéro, sauf si la temporisation est "Jour"
 if timeframe != "Jour":
@@ -65,20 +68,22 @@ filtered_data = filtered_data[["Jour", "Consomation eau général", "Consomation
 # Graphique avec deux échelles (m³ pour l'eau, kWh pour gaz et électricité)
 fig = go.Figure()
 
+# Variables et leurs couleurs/échelles
 variables = ["Consomation eau général", "Consomation gaz général", "Consomation elec général"]
 colors = ["blue", "green", "orange"]
 units = ["m³", "kWh", "kWh"]
 
+# Tracer les séries de données avec ajustement des échelles
 for var, color, unit in zip(variables, colors, units):
     axis = "y" if var != "Consomation eau général" else "y2"  # Utiliser y2 pour l'eau
-    scaling_factor = 1 if var != "Consomation eau général" else 0.1
+    scaling_factor = 1 if var != "Consomation eau général" else 0.1  # Échelle pour l'eau
     fig.add_trace(go.Scatter(
         x=filtered_data[date_col],
-        y=filtered_data[var] * scaling_factor,
+        y=filtered_data[var] * scaling_factor,  # Ajuster les valeurs en fonction de l'échelle
         mode="lines+markers",
         name=f"{var} ({unit})",
         line=dict(color=color),
-        yaxis=axis  # Spécifier l'axe
+        yaxis=axis  # Associer à l'axe principal ou secondaire
     ))
 
 # Ajouter une courbe de tendance linéaire pour chaque variable
@@ -86,14 +91,14 @@ for var, color, unit in zip(variables, colors, units):
     scaling_factor = 1 if var != "Consomation eau général" else 0.1
     slope, intercept, _, _, _ = linregress(range(len(filtered_data)), filtered_data[var] * scaling_factor)
     trendline = [slope * x + intercept for x in range(len(filtered_data))]
-    axis = "y" if var != "Consomation eau général" else "y2"  # Utiliser y2 pour l'eau
+    axis = "y" if var != "Consomation eau général" else "y2"
     fig.add_trace(go.Scatter(
         x=filtered_data[date_col],
-        y=trendline,
+        y=trendline,  # Tendance linéaire ajustée à l'échelle
         mode="lines",
         name=f"Tendance {var} ({unit})",
         line=dict(dash="dash", color=color),
-        yaxis=axis  # Spécifier l'axe
+        yaxis=axis
     ))
 
 # Configurer l'axe secondaire
@@ -103,13 +108,17 @@ fig.update_layout(
     yaxis=dict(
         title="Consommation Gaz/Élec (kWh)",
         titlefont=dict(color="orange"),
-        side="left"
+        side="left",
+        showgrid=True,  # Assurer une grille alignée
+        range=[0, max(filtered_data["Consomation elec général"]) * 1.1]
     ),
     yaxis2=dict(
         title="Consommation Eau (m³)",
         titlefont=dict(color="blue"),
         overlaying="y",
-        side="right"
+        side="right",
+        showgrid=False,  # Supprimer la grille pour éviter les conflits
+        range=[0, max(filtered_data["Consomation eau général"]) * 0.1 * 1.1]  # Ajuster l'échelle secondaire
     ),
     legend=dict(orientation="h"),
 )
@@ -131,8 +140,9 @@ stats = {
     ]
 }
 
+# Créer un DataFrame pour les statistiques
 stats_df = pd.DataFrame(stats)
-stats_df.iloc[:, 1:4] = stats_df.iloc[:, 1:4].round(0)
+stats_df.iloc[:, 1:4] = stats_df.iloc[:, 1:4].round(0)  # Arrondir les valeurs numériques
 
 # Affichage du tableau récapitulatif
 st.write("### Tableau Récapitulatif")
