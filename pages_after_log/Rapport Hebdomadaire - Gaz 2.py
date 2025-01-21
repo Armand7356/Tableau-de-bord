@@ -190,13 +190,13 @@ for start, end in parsed_time_ranges:
     if start < end:
         hourly_data.append(
             filtered_data[(filtered_data["DateTime"].dt.hour >= start) & (filtered_data["DateTime"].dt.hour < end)]
-            .groupby("Jour")["Consomation eau général"].sum()
+            .groupby("Jour")["Consomation gaz général"].sum()
             .rename(col_name)
         )
     else:
         hourly_data.append(
             filtered_data[(filtered_data["DateTime"].dt.hour >= start) | (filtered_data["DateTime"].dt.hour < end)]
-            .groupby("Jour")["Consomation eau général"].sum()
+            .groupby("Jour")["Consomation gaz général"].sum()
             .rename(col_name)
         )
 hourly_data = pd.concat(hourly_data, axis=1)
