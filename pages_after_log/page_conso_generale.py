@@ -101,7 +101,6 @@ fig.update_layout(
     xaxis_title="Date",
     yaxis=dict(title="Consommation Gaz/Élec (kWh)", titlefont=dict(color="orange")),
     legend=dict(orientation="h"),
-    xaxis_title="Date",
     yaxis=dict(title="Consommation Eau (m³)", titlefont=dict(color="blue")),
     yaxis2=dict(title="Consommation Gaz/Élec (kWh)", titlefont=dict(color="orange"), overlaying="y", side="right"),
     legend=dict(orientation="h"),
