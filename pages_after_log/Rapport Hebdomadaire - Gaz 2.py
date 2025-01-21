@@ -170,6 +170,15 @@ else:
     )
     st.plotly_chart(fig, use_container_width=True)
 
+# Create a horizontal layout for filters
+col11, col12, col13, col14 = st.columns([1.7, 1.2, 1.2, 2])
+
+with col11:
+
+    # Sélection du prix
+    Prix_gaz = 0.20
+    week_number = st.number_input("Choisissez le prix du KW de gaz :", value=default_start_date.isocalendar()[1], step=1)
+
     # Ajouter un filtre pour n'afficher que les colonnes contenant "gaz"
     filtered_columns = [col for col in daily_data.columns if "gaz" in col.lower()]
     filtered_table = daily_data[filtered_columns]
@@ -177,6 +186,7 @@ else:
     # Ajouter les lignes moyenne et somme au tableau des données filtrées
     filtered_table.loc['Moyenne'] = filtered_table.mean()
     filtered_table.loc['Somme'] = filtered_table.sum()-filtered_table.loc['Moyenne']
+    filtered_table.loc['Prix'] = filtered_table.loc['Somme']*Prix_gaz
 
     # Afficher le tableau des valeurs de consommation pour la semaine
     st.write("### Données de consommation sur la semaine")
