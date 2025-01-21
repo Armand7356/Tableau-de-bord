@@ -116,8 +116,9 @@ stats = {
         linregress(range(len(filtered_data)), filtered_data[var])[0] for var in variables
     ]
 }
-stats[:3]=round(stats[:3],0)
+
 stats_df = pd.DataFrame(stats)
+stats_df.iloc[:, 1:4] = stats_df.iloc[:, 1:4].round(0)
 
 # Affichage du tableau récapitulatif
 st.write("### Tableau Récapitulatif")
