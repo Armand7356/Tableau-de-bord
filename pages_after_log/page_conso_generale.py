@@ -16,6 +16,7 @@ def load_data(file_path):
 # Charger les données
 file_path = "tableau de bord Wit.xlsx"
 hourly_data, daily_data, weekly_data = load_data(file_path)
+st.write("Colonnes disponibles :", df.columns)
 
 # Page principale
 st.title("Consommation Générale")
