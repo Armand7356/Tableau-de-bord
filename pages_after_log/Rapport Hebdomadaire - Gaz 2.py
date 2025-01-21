@@ -176,7 +176,7 @@ else:
 
     # Ajouter les lignes moyenne et somme au tableau des données filtrées
     filtered_table.loc['Moyenne'] = filtered_table.mean()
-    filtered_table.loc['Somme'] = filtered_table[:len(filtered_table-1)].sum()
+    filtered_table.loc['Somme'] = filtered_table[:len(filtered_table-2)].sum()
 
 
     # Afficher le tableau des valeurs de consommation pour la semaine
