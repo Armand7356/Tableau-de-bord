@@ -189,7 +189,7 @@ filtered_table = daily_data[filtered_columns]
 filtered_table.loc['Moyenne'] = filtered_table.mean()
 filtered_table.loc['Somme'] = filtered_table.sum()-filtered_table.loc['Moyenne']
 filtered_table.loc['Prix'] = filtered_table.loc['Somme']*Prix_gaz
-filtered_table[-3:]= round(filtered_table[-3:],1)
+filtered_table= round(filtered_table,1)
 # Afficher le tableau des valeurs de consommation pour la semaine
 st.write("### Données de consommation sur la semaine")
 st.dataframe(filtered_table)
