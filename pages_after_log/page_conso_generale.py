@@ -99,8 +99,6 @@ for var, color, unit in zip(variables, colors, units):
 fig.update_layout(
     title="Consommation Générale avec Courbes de Tendance",
     xaxis_title="Date",
-    yaxis=dict(title="Consommation Gaz/Élec (kWh)", titlefont=dict(color="orange")),
-    legend=dict(orientation="h"),
     yaxis=dict(title="Consommation Eau (m³)", titlefont=dict(color="blue")),
     yaxis2=dict(title="Consommation Gaz/Élec (kWh)", titlefont=dict(color="orange"), overlaying="y", side="right"),
     legend=dict(orientation="h"),
