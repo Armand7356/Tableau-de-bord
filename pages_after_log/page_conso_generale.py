@@ -48,7 +48,6 @@ else:  # Tout
     df = daily_data
     date_col = "Jour"
 
-st.write("Colonnes disponibles :", df.columns)
 
 # Filtrer les données selon la plage de dates
 filtered_data = df[(df[date_col] >= pd.Timestamp(start_date)) & (df[date_col] <= pd.Timestamp(end_date))]
@@ -117,7 +116,7 @@ stats = {
         linregress(range(len(filtered_data)), filtered_data[var])[0] for var in variables
     ]
 }
-
+stats[:3]=round(stats[:3],0)
 stats_df = pd.DataFrame(stats)
 
 # Affichage du tableau récapitulatif
