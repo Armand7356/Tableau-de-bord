@@ -122,7 +122,7 @@ fig.update_layout(
         overlaying="y",
         side="right",
         range=[0, y1_max*0.01 * 1.1]
-    )
+    ),
     legend=dict(
         orientation="h",  # Orientation horizontale
         yanchor="top",    # Alignement vertical
