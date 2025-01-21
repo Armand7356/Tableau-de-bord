@@ -177,7 +177,7 @@ with col11:
 
     # Sélection du prix
     Prix_gaz = 0.20
-    week_number = st.number_input("Choisissez le prix du KW de gaz :", value=default_start_date.isocalendar()[1], step=1)
+    Prix_gaz = st.number_input("Prix gaz (€/kWh)", value=0.2, step=0.01)
 
     # Ajouter un filtre pour n'afficher que les colonnes contenant "gaz"
     filtered_columns = [col for col in daily_data.columns if "gaz" in col.lower()]
