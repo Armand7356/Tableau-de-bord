@@ -35,8 +35,8 @@ with col3:
 
 # Sélection des données selon la temporisation
 if timeframe == "Semaine":
-    df = weekly_data
-    date_col = "Semaines"
+    df = daily_data.resample('W', on="Jour").sum().reset_index()
+    date_col = "Jour"
 elif timeframe == "Mois":
     df = daily_data.resample('M', on="Jour").sum().reset_index()
     date_col = "Jour"
