@@ -69,9 +69,9 @@ filtered_data = filtered_data[["Jour", "Consomation eau général", "Consomation
 fig = go.Figure()
 
 # Variables et leurs couleurs/échelles
-variables = ["Consomation eau général", "Consomation gaz général", "Consomation elec général"]
-colors = ["blue", "green", "orange"]
-units = ["m³", "kWh", "kWh"]
+variables = ["Consomation gaz général", "Consomation elec général", "Consomation eau général"]
+colors = ["green", "orange","blue"]
+units = ["kWh", "kWh","m³"]
 
 # Tracer les séries de données avec ajustement des échelles
 for var, color, unit in zip(variables, colors, units):
