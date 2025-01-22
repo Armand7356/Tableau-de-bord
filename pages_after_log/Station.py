@@ -19,10 +19,8 @@ daily_data = load_data(file_path)
 st.title("Analyse de l'Eau")
 st.write("Visualisation des consommations d'eau dans les différentes parties de l'usine")
 
-
 # Filtres
-# Permet de sélectionner la temporalité et la plage de dates
-col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1.5])
+col1, col2, col3 = st.columns([1, 1, 1.5])
 
 with col1:
     timeframe = st.selectbox("Temporisation", ["Semaine", "Mois", "Année", "Tout"])
@@ -31,98 +29,57 @@ with col2:
 with col3:
     end_date = st.date_input("Fin", value=min(daily_data['Jour'].max().date(), datetime.today().date()))
 
-# Sélection des données selon la temporisation
-if timeframe == "Semaine":
-    # Regrouper les données par semaine
-    df = daily_data.resample('W', on="Jour").sum().reset_index()
-    date_col = "Jour"
-elif timeframe == "Mois":
-    # Regrouper les données par mois
-    df = daily_data.resample('ME', on="Jour").sum().reset_index()
-    date_col = "Jour"
-elif timeframe == "Année":
-    # Regrouper les données par année
-    df = daily_data.resample('YE', on="Jour").sum().reset_index()
-    date_col = "Jour"
-else:  # Tout
-    # Toutes les données sans regroupement
-    df = daily_data
-    date_col = "Jour"
+# Prétraitement de la colonne "Jour"
+daily_data["Jour"] = pd.to_datetime(daily_data["Jour"], errors='coerce')
+filtered_data = daily_data[(daily_data["Jour"] >= pd.Timestamp(start_date)) & (daily_data["Jour"] <= pd.Timestamp(end_date))]
 
+# Fonction pour regrouper par plage de temps
+def group_by_timeframe(data, timeframe):
+    if timeframe == "Semaine":
+        data["Temps"] = data["Jour"].dt.to_period("W-SUN").apply(lambda r: r.start_time)
+    elif timeframe == "Mois":
+        data["Temps"] = data["Jour"].dt.to_period("M").apply(lambda r: r.start_time)
+    elif timeframe == "Année":
+        data["Temps"] = data["Jour"].dt.to_period("A").apply(lambda r: r.start_time)
+    else:
+        data["Temps"] = data["Jour"]
 
+    # Somme des variables numériques par période
+    numeric_columns = data.select_dtypes(include=[np.number]).columns
+    grouped_data = data.groupby("Temps")[numeric_columns].sum().reset_index()
+    return grouped_data
 
-# Vérifier que les colonnes existent dans df avant de filtrer
-if "Jour" in df.columns:
-    filtered_data = df[(df["Jour"] >= pd.Timestamp(start_date)) & (df["Jour"] <= pd.Timestamp(end_date))]
-else:
-    filtered_data = df
+# Regrouper les données selon la plage de temps
+grouped_data = group_by_timeframe(filtered_data, timeframe)
 
 # Variables à analyser
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
-filtered_data = filtered_data[["Jour"] + variables]
+result_data = grouped_data[["Temps"] + [var for var in variables if var in grouped_data.columns]]
 
-# Vérifier et filtrer les colonnes disponibles
-available_variables = [col for col in variables if col in filtered_data.columns]
-if "Jour" in filtered_data.columns:
-    filtered_data = filtered_data[["Jour"] + available_variables]
+# Afficher le tableau regroupé
+st.write("### Données regroupées")
+st.dataframe(result_data)
 
-# Convertir les colonnes sélectionnées en type numérique (sauf 'Jour')
-for col in available_variables:
-    filtered_data[col] = pd.to_numeric(filtered_data[col], errors='coerce').fillna(0)
-
-# Graphique avec les variables sélectionnées (Graphiques linéaires)
+# Création du graphique
 fig = go.Figure()
 colors = ["blue", "green", "orange", "purple"]
 
 for var, color in zip(variables, colors):
-    fig.add_trace(go.Scatter(
-        x=filtered_data["Jour"],
-        y=filtered_data[var],
-        mode="lines+markers",
-        name=var,
-        line=dict(color=color)
-    ))
-
+    if var in result_data.columns:
+        fig.add_trace(go.Scatter(
+            x=result_data["Temps"],
+            y=result_data[var],
+            mode="lines+markers",
+            name=var,
+            line=dict(color=color)
+        ))
 
 # Configurer le graphique
 fig.update_layout(
     title="Consommation d'Eau par Secteur",
-    xaxis_title="Date",
+    xaxis_title="Période",
     yaxis_title="Volume (m³)",
     legend=dict(orientation="h")
 )
 
 st.plotly_chart(fig, use_container_width=True)
-
-# Analyse des volumes entrants et sortants
-st.write("### Analyse des Volumes Entrants et Sortants")
-
-# Convertir les colonnes en type numérique
-for var in variables:
-    filtered_data[var] = pd.to_numeric(filtered_data[var], errors='coerce').fillna(0)
-
-# Calcul des volumes entrants et sortants
-total_entree = filtered_data["Consomation eau général"].sum()
-total_sortie = filtered_data["Entrée Bassin"].sum()
-
-st.write("6")
-
-# Pourcentage d'eau entrant ressortant
-pourcentage_sortie = (total_sortie / total_entree) * 100 if total_entree > 0 else 0
-
-# Affichage des résultats
-st.write(f"Volume Total Entrant : **{total_entree:.2f} m³**")
-st.write(f"Volume Total Sortant (Entrée Bassin) : **{total_sortie:.2f} m³**")
-st.write(f"Pourcentage d'eau entrant ressortant : **{pourcentage_sortie:.2f}%**")
-
-# Diagramme en anneau pour visualiser la répartition
-fig_donut = go.Figure()
-fig_donut.add_trace(go.Pie(
-    labels=["Eau Entrante", "Eau Sortante"],
-    values=[total_entree - total_sortie, total_sortie],
-    hole=0.5,
-    marker=dict(colors=["skyblue", "orange"])
-))
-
-fig_donut.update_layout(title="Répartition des Volumes d'Eau")
-st.plotly_chart(fig_donut, use_container_width=True)
