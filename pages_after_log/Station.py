@@ -145,7 +145,7 @@ for var, color in zip(station_variables, colors_station):
             y=filtered_station[var],
             mode="lines+markers",
             name=var,
-            line=dict(color=color, dash="dash" if "Objectif" in var else "solid")  # Ajouter des pointillés pour les "Objectif"
+            line=dict(color=color, mode="lines", dash="dash" if "Objectif" in var else "solid")  # Ajouter des pointillés pour les "Objectif"
         ))
 # Configurer le graphique
 fig_station.update_layout(
