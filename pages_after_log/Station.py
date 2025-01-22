@@ -30,27 +30,25 @@ with col3:
     end_date = st.date_input("Fin", value=min(daily_data['Jour'].max().date(), datetime.today().date()))
 
 # Sélection des données selon la temporisation
-if timeframe == "Semaine":
-    df = daily_data.set_index("Jour").resample('W').sum().reset_index()
-    for col in variables:  # Convertir les colonnes en nombres
-        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
-    date_col = "Jour"
-elif timeframe == "Mois":
-    df = daily_data.set_index("Jour").resample('ME').sum().reset_index()
-    for col in variables:  # Convertir les colonnes en nombres
-          df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
-    date_col = "Jour"
-elif timeframe == "Année":
-    df = daily_data.set_index("Jour").resample('YE').sum().reset_index()
-    for col in variables:  # Convertir les colonnes en nombres
-            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
-    date_col = "Jour"
-else:  # Tout
-    df = daily_data
-    date_col = "Jour"
+def group_by_timeframe(data, timeframe, date_col):
+    if timeframe == "Semaine":
+        data["Semaine"] = data[date_col].dt.to_period("W-SUN").apply(lambda r: r.start_time)
+        grouped_data = data.groupby("Semaine").sum().reset_index()
+    elif timeframe == "Mois":
+        data["Mois"] = data[date_col].dt.to_period("M").apply(lambda r: r.start_time)
+        grouped_data = data.groupby("Mois").sum().reset_index()
+    elif timeframe == "Année":
+        data["Année"] = data[date_col].dt.to_period("A").apply(lambda r: r.start_time)
+        grouped_data = data.groupby("Année").sum().reset_index()
+    else:  # Tout
+        grouped_data = data
+    return grouped_data
+
+daily_data["Jour"] = pd.to_datetime(daily_data["Jour"])  # S'assurer que "Jour" est au format datetime
+df = group_by_timeframe(daily_data, timeframe, "Jour")
 
 # Filtrer les données selon la plage de dates
-filtered_data = df[(df[date_col] >= pd.Timestamp(start_date)) & (df[date_col] <= pd.Timestamp(end_date))]
+filtered_data = df[(df["Jour"] >= pd.Timestamp(start_date)) & (df["Jour"] <= pd.Timestamp(end_date))]
 
 # Variables à analyser
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
@@ -62,7 +60,7 @@ colors = ["blue", "green", "orange", "purple"]
 
 for var, color in zip(variables, colors):
     fig.add_trace(go.Scatter(
-        x=filtered_data[date_col],
+        x=filtered_data["Jour"],
         y=filtered_data[var],
         mode="lines+markers",
         name=var,
