@@ -32,23 +32,29 @@ with col3:
 # Sélection des données selon la temporisation
 def group_by_timeframe(data, timeframe, date_col):
     if timeframe == "Semaine":
-        data["Semaine"] = data[date_col].dt.to_period("W-SUN").apply(lambda r: r.start_time)
+        data["Semaine"] = data[date_col].dt.to_period("W-SUN")
         grouped_data = data.groupby("Semaine").sum().reset_index()
+        grouped_data["Semaine"] = grouped_data["Semaine"].apply(lambda r: r.start_time if not pd.isnull(r) else None)
     elif timeframe == "Mois":
-        data["Mois"] = data[date_col].dt.to_period("M").apply(lambda r: r.start_time)
+        data["Mois"] = data[date_col].dt.to_period("M")
         grouped_data = data.groupby("Mois").sum().reset_index()
+        grouped_data["Mois"] = grouped_data["Mois"].apply(lambda r: r.start_time if not pd.isnull(r) else None)
     elif timeframe == "Année":
-        data["Année"] = data[date_col].dt.to_period("A").apply(lambda r: r.start_time)
+        data["Année"] = data[date_col].dt.to_period("A")
         grouped_data = data.groupby("Année").sum().reset_index()
+        grouped_data["Année"] = grouped_data["Année"].apply(lambda r: r.start_time if not pd.isnull(r) else None)
     else:  # Tout
         grouped_data = data
     return grouped_data
 
-daily_data["Jour"] = pd.to_datetime(daily_data["Jour"])  # S'assurer que "Jour" est au format datetime
+daily_data["Jour"] = pd.to_datetime(daily_data["Jour"], errors='coerce')  # S'assurer que "Jour" est au format datetime
 df = group_by_timeframe(daily_data, timeframe, "Jour")
 
 # Filtrer les données selon la plage de dates
-filtered_data = df[(df["Jour"] >= pd.Timestamp(start_date)) & (df["Jour"] <= pd.Timestamp(end_date))]
+if "Jour" in df.columns:
+    filtered_data = df[(df["Jour"] >= pd.Timestamp(start_date)) & (df["Jour"] <= pd.Timestamp(end_date))]
+else:
+    filtered_data = df
 
 # Variables à analyser
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
