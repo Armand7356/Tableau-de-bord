@@ -20,8 +20,7 @@ st.title("Analyse de l'Eau")
 st.write("Visualisation des consommations d'eau dans les différentes parties de l'usine")
 
 # Filtres
-# Permet de sélectionner la temporalité et la plage de dates
-col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1.5])
+col1, col2, col3 = st.columns([1, 1, 1.5])
 
 with col1:
     timeframe = st.selectbox("Temporisation", ["Semaine", "Mois", "Année", "Tout"])
@@ -32,19 +31,15 @@ with col3:
 
 # Sélection des données selon la temporisation
 if timeframe == "Semaine":
-    # Regrouper les données par semaine
-    df = daily_data.resample('W', on="Jour").sum().reset_index()
+    df = daily_data.set_index("Jour").resample('W').sum().reset_index()
     date_col = "Jour"
 elif timeframe == "Mois":
-    # Regrouper les données par mois
-    df = daily_data.resample('ME', on="Jour").sum().reset_index()
+    df = daily_data.set_index("Jour").resample('ME').sum().reset_index()
     date_col = "Jour"
 elif timeframe == "Année":
-    # Regrouper les données par année
-    df = daily_data.resample('YE', on="Jour").sum().reset_index()
+    df = daily_data.set_index("Jour").resample('YE').sum().reset_index()
     date_col = "Jour"
 else:  # Tout
-    # Toutes les données sans regroupement
     df = daily_data
     date_col = "Jour"
 
@@ -55,24 +50,24 @@ filtered_data = df[(df[date_col] >= pd.Timestamp(start_date)) & (df[date_col] <=
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
 filtered_data = filtered_data[["Jour"] + variables]
 
-# Graphique avec les variables sélectionnées
+# Graphique avec les variables sélectionnées (Graphiques linéaires)
 fig = go.Figure()
 colors = ["blue", "green", "orange", "purple"]
 
 for var, color in zip(variables, colors):
-    fig.add_trace(go.Bar(
+    fig.add_trace(go.Scatter(
         x=filtered_data[date_col],
         y=filtered_data[var],
+        mode="lines+markers",
         name=var,
-        marker=dict(color=color)
+        line=dict(color=color)
     ))
 
-# Configurer l'histogramme
+# Configurer le graphique
 fig.update_layout(
     title="Consommation d'Eau par Secteur",
     xaxis_title="Date",
     yaxis_title="Volume (m³)",
-    barmode="stack",
     legend=dict(orientation="h")
 )
 
@@ -96,7 +91,6 @@ pourcentage_sortie = (total_sortie / total_entree) * 100 if total_entree > 0 els
 st.write(f"Volume Total Entrant : **{total_entree:.2f} m³**")
 st.write(f"Volume Total Sortant (Entrée Bassin) : **{total_sortie:.2f} m³**")
 st.write(f"Pourcentage d'eau entrant ressortant : **{pourcentage_sortie:.2f}%**")
-
 
 # Diagramme en anneau pour visualiser la répartition
 fig_donut = go.Figure()
