@@ -18,7 +18,6 @@ daily_data = load_data(file_path)
 # Page principale
 st.title("Analyse de l'Eau")
 st.write("Visualisation des consommations d'eau dans les différentes parties de l'usine")
-st.write("1")
 
 
 # Filtres
@@ -50,7 +49,7 @@ else:  # Tout
     df = daily_data
     date_col = "Jour"
 
-st.write("3")
+
 
 # Filtrer les données selon la plage de dates
 if "Jour" in df.columns:
@@ -58,7 +57,6 @@ if "Jour" in df.columns:
 else:
     filtered_data = df
 
-st.write("4")
 
 # Variables à analyser
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
@@ -81,7 +79,6 @@ for var, color in zip(variables, colors):
         line=dict(color=color)
     ))
 
-st.write("5")
 
 # Configurer le graphique
 fig.update_layout(
