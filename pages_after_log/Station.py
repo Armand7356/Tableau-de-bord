@@ -46,15 +46,9 @@ else:  # Tout
 # Filtrer les données selon la plage de dates
 filtered_data = df[(df[date_col] >= pd.Timestamp(start_date)) & (df[date_col] <= pd.Timestamp(end_date))]
 
-
-
 # Variables à analyser
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
 filtered_data = filtered_data[["Jour"] + variables]
-
-for var in variables:
-    filtered_data[var] = pd.to_numeric(filtered_data[var], errors='coerce').fillna(0)
-
 
 # Graphique avec les variables sélectionnées
 fig = go.Figure()
@@ -81,9 +75,10 @@ st.plotly_chart(fig, use_container_width=True)
 
 # Analyse des volumes entrants et sortants
 st.write("### Analyse des Volumes Entrants et Sortants")
+
+# Convertir les colonnes en type numérique
 for var in variables:
     filtered_data[var] = pd.to_numeric(filtered_data[var], errors='coerce').fillna(0)
-
 
 # Calcul des volumes entrants et sortants
 total_entree = filtered_data["Consomation eau général"].sum()
@@ -96,6 +91,7 @@ pourcentage_sortie = (total_sortie / total_entree) * 100 if total_entree > 0 els
 st.write(f"Volume Total Entrant : **{total_entree:.2f} m³**")
 st.write(f"Volume Total Sortant (Entrée Bassin) : **{total_sortie:.2f} m³**")
 st.write(f"Pourcentage d'eau entrant ressortant : **{pourcentage_sortie:.2f}%**")
+
 
 # Diagramme en anneau pour visualiser la répartition
 fig_donut = go.Figure()
