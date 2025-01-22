@@ -30,7 +30,7 @@ with col3:
     end_date = st.date_input("Fin", value=min(daily_data['Jour'].max().date(), datetime.today().date()))
 
 # Sélection des données selon la temporisation
-elif timeframe == "Semaine":
+if timeframe == "Semaine":
     df = daily_data.resample('W', on="Jour").sum().reset_index()
     date_col = "Jour"
 elif timeframe == "Mois":
