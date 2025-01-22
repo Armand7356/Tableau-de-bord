@@ -51,6 +51,7 @@ def group_by_timeframe(data, timeframe):
 
 # Regrouper les données selon la plage de temps
 grouped_data = group_by_timeframe(filtered_data, timeframe)
+st.dataframe(grouped_data)
 
 # Variables à analyser
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
