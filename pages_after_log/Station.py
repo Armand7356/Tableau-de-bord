@@ -18,7 +18,7 @@ daily_data = load_data(file_path)
 # Page principale
 st.title("Analyse de l'Eau")
 st.write("Visualisation des consommations d'eau dans les différentes parties de l'usine")
-
+st.write("1")
 # Filtres
 col1, col2, col3 = st.columns([1, 1, 1.5])
 
@@ -28,6 +28,8 @@ with col2:
     start_date = st.date_input("Début", value=daily_data['Jour'].min())
 with col3:
     end_date = st.date_input("Fin", value=min(daily_data['Jour'].max().date(), datetime.today().date()))
+
+st.write("2")
 
 # Sélection des données selon la temporisation
 def group_by_timeframe(data, timeframe, date_col):
@@ -65,6 +67,8 @@ def group_by_timeframe(data, timeframe, date_col):
         grouped_data = data
     return grouped_data
 
+st.write("3")
+
 daily_data["Jour"] = pd.to_datetime(daily_data["Jour"], errors='coerce')  # S'assurer que "Jour" est au format datetime
 df = group_by_timeframe(daily_data, timeframe, "Jour")
 
@@ -73,6 +77,8 @@ if "Jour" in df.columns:
     filtered_data = df[(df["Jour"] >= pd.Timestamp(start_date)) & (df["Jour"] <= pd.Timestamp(end_date))]
 else:
     filtered_data = df
+
+st.write("4")
 
 # Variables à analyser
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
@@ -90,6 +96,8 @@ for var, color in zip(variables, colors):
         name=var,
         line=dict(color=color)
     ))
+
+st.write("5")
 
 # Configurer le graphique
 fig.update_layout(
@@ -111,6 +119,8 @@ for var in variables:
 # Calcul des volumes entrants et sortants
 total_entree = filtered_data["Consomation eau général"].sum()
 total_sortie = filtered_data["Entrée Bassin"].sum()
+
+st.write("6")
 
 # Pourcentage d'eau entrant ressortant
 pourcentage_sortie = (total_sortie / total_entree) * 100 if total_entree > 0 else 0
