@@ -87,7 +87,7 @@ fig.update_layout(
     title="Consommation d'Eau par Secteur",
     xaxis_title="Période",
     yaxis_title="Volume (m³)",
-    legend=dict(orientation="h")
+    legend=dict(orientation="h", y=-0.2)
 )
 
 st.plotly_chart(fig, use_container_width=True)
@@ -121,7 +121,7 @@ if "Consomation eau général" in result_data.columns and "Sortie Bassin" in res
         ))
         fig_donut.update_layout(
             title="Répartition des Volumes d'Eau",
-            legend=dict(orientation="h"),
+            legend=dict(orientation="h", y=-0.2),
         )
         st.plotly_chart(fig_donut, use_container_width=True)
     else:
@@ -153,7 +153,8 @@ fig_station.update_layout(
     title="Qualité de l'eau de la station",
     xaxis_title="Date",
     yaxis_title="Concentration (mg/L)",
-    legend=dict(orientation="h")
+    legend=dict(orientation="h",y=-0.2)
+    
 )
 
 st.plotly_chart(fig_station, use_container_width=True)
