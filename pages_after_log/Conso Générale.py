@@ -48,7 +48,7 @@ elif timeframe == "Mois":
     date_col = "Jour"
 elif timeframe == "Année":
     # Regrouper les données par année
-    df = daily_data.resample('Y', on="Jour").sum().reset_index()
+    df = daily_data.resample('YE', on="Jour").sum().reset_index()
     date_col = "Jour"
 else:  # Tout
     # Toutes les données sans regroupement
@@ -135,15 +135,26 @@ fig.update_layout(
 
 st.plotly_chart(fig, use_container_width=True)
 
+
+# Seconde ligne pour les coûts par unité d'énergie
+st.write("### Coût par unité d'énergie (modifiable)")
+cost_col1, cost_col2, cost_col3 = st.columns([1, 1, 1])
+with cost_col1:
+    cost_water = st.number_input("Prix eau (€/m³)", value=2.5, step=0.1)
+with cost_col2:
+    cost_elec = st.number_input("Prix électricité (€/kWh)", value=0.15, step=0.01)
+with cost_col3:
+    cost_gas = st.number_input("Prix gaz (€/kWh)", value=0.08, step=0.01)
+
 # Calcul des statistiques
 stats = {
     "Variable": ["Eau (m³)", "Gaz (kWh)", "Électricité (kWh)"],
     "Moyenne": [filtered_data[var].mean() for var in variables],
     "Somme": [filtered_data[var].sum() for var in variables],
     "Prix (€)": [
-        filtered_data["Consomation eau général"].sum() * 2.5,
-        filtered_data["Consomation gaz général"].sum() * 0.08,
-        filtered_data["Consomation elec général"].sum() * 0.15
+        filtered_data["Consomation eau général"].sum() * cost_water,
+        filtered_data["Consomation gaz général"].sum() * cost_gas,
+        filtered_data["Consomation elec général"].sum() * cost_elec
     ],
     "Tendance (Coef directeur)": [
         linregress(range(len(filtered_data)), filtered_data[var])[0] for var in variables
