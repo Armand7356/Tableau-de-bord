@@ -19,8 +19,11 @@ daily_data = load_data(file_path)
 st.title("Analyse de l'Eau")
 st.write("Visualisation des consommations d'eau dans les différentes parties de l'usine")
 st.write("1")
+
+
 # Filtres
-col1, col2, col3 = st.columns([1, 1, 1.5])
+# Permet de sélectionner la temporalité et la plage de dates
+col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1.5])
 
 with col1:
     timeframe = st.selectbox("Temporisation", ["Semaine", "Mois", "Année", "Tout"])
@@ -29,48 +32,25 @@ with col2:
 with col3:
     end_date = st.date_input("Fin", value=min(daily_data['Jour'].max().date(), datetime.today().date()))
 
-st.write("2")
-
 # Sélection des données selon la temporisation
-def group_by_timeframe(data, timeframe, date_col):
-    if timeframe == "Semaine":
-        data["Semaine"] = data[date_col].dt.to_period("W-SUN")
-        grouped_data = data.groupby("Semaine").agg({
-            date_col: 'first',  # Conserver une date représentative
-            "Consomation eau général": 'sum',
-            "Station pre-traitement": 'sum',
-            "Entrée Bassin": 'sum',
-            "Sortie Bassin": 'sum'
-        }).reset_index()
-        grouped_data["Jour"] = grouped_data[date_col]
-    elif timeframe == "Mois":
-        data["Mois"] = data[date_col].dt.to_period("M")
-        grouped_data = data.groupby("Mois").agg({
-            date_col: 'first',
-            "Consomation eau général": 'sum',
-            "Station pre-traitement": 'sum',
-            "Entrée Bassin": 'sum',
-            "Sortie Bassin": 'sum'
-        }).reset_index()
-        grouped_data["Jour"] = grouped_data[date_col]
-    elif timeframe == "Année":
-        data["Année"] = data[date_col].dt.to_period("A")
-        grouped_data = data.groupby("Année").agg({
-            date_col: 'first',
-            "Consomation eau général": 'sum',
-            "Station pre-traitement": 'sum',
-            "Entrée Bassin": 'sum',
-            "Sortie Bassin": 'sum'
-        }).reset_index()
-        grouped_data["Jour"] = grouped_data[date_col]
-    else:  # Tout
-        grouped_data = data
-    return grouped_data
+if timeframe == "Semaine":
+    # Regrouper les données par semaine
+    df = daily_data.resample('W', on="Jour").sum().reset_index()
+    date_col = "Jour"
+elif timeframe == "Mois":
+    # Regrouper les données par mois
+    df = daily_data.resample('ME', on="Jour").sum().reset_index()
+    date_col = "Jour"
+elif timeframe == "Année":
+    # Regrouper les données par année
+    df = daily_data.resample('YE', on="Jour").sum().reset_index()
+    date_col = "Jour"
+else:  # Tout
+    # Toutes les données sans regroupement
+    df = daily_data
+    date_col = "Jour"
 
 st.write("3")
-
-daily_data["Jour"] = pd.to_datetime(daily_data["Jour"], errors='coerce')  # S'assurer que "Jour" est au format datetime
-df = group_by_timeframe(daily_data, timeframe, "Jour")
 
 # Filtrer les données selon la plage de dates
 if "Jour" in df.columns:
@@ -83,6 +63,10 @@ st.write("4")
 # Variables à analyser
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
 filtered_data = filtered_data[["Jour"] + variables]
+
+# Convertir les colonnes en type numérique après filtrage
+for var in variables:
+    filtered_data[var] = pd.to_numeric(filtered_data[var], errors='coerce').fillna(0)
 
 # Graphique avec les variables sélectionnées (Graphiques linéaires)
 fig = go.Figure()
