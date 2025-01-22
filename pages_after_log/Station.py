@@ -75,6 +75,9 @@ st.plotly_chart(fig, use_container_width=True)
 
 # Analyse des volumes entrants et sortants
 st.write("### Analyse des Volumes Entrants et Sortants")
+for var in variables:
+    filtered_data[var] = pd.to_numeric(filtered_data[var], errors='coerce').fillna(0)
+
 
 # Calcul des volumes entrants et sortants
 total_entree = filtered_data["Consomation eau général"].sum()
