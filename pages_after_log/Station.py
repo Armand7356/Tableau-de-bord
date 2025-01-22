@@ -87,3 +87,25 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
+# Analyse et affichage des volumes entrants et sortants
+st.write("### Analyse des volumes entrants et sortants")
+if "Consomation eau général" in result_data.columns and "Sortie Bassin" in result_data.columns:
+    total_entree = result_data["Consomation eau général"].sum()
+    total_sortie = result_data["Sortie Bassin"].sum()
+    pourcentage_sortie = (total_sortie / total_entree) * 100 if total_entree > 0 else 0
+
+    st.write(f"Volume Total Entrant : **{total_entree:.2f} m³**")
+    st.write(f"Volume Total Sortant : **{total_sortie:.2f} m³**")
+    st.write(f"Pourcentage d'eau ressortant : **{pourcentage_sortie:.2f}%**")
+
+    # Diagramme en cercle
+    fig_donut = go.Figure()
+    fig_donut.add_trace(go.Pie(
+        labels=["Volume Entrant", "Volume Sortant"],
+        values=[total_entree - total_sortie, total_sortie],
+        hole=0.5,
+        marker=dict(colors=["skyblue", "orange"])
+    ))
+    fig_donut.update_layout(title="Répartition des Volumes d'Eau")
+    st.plotly_chart(fig_donut, use_container_width=True)

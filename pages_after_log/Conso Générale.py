@@ -149,7 +149,6 @@ with cost_col3:
 for var in variables:
     filtered_data[var] = pd.to_numeric(filtered_data[var], errors='coerce').fillna(0)
 
-
 # Calcul des statistiques
 stats = {
     "Variable": ["Eau (m³)", "Gaz (kWh)", "Électricité (kWh)"],
