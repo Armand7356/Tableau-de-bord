@@ -68,7 +68,7 @@ st.dataframe(result_data)
 fig = go.Figure()
 colors = ["blue", "green", "orange", "purple", "red"]
 
-for var, color in zip(variables + ["Volume Non Sortant"], colors):
+for var, color in zip(variables, colors):
     if var in result_data.columns:
         fig.add_trace(go.Scatter(
             x=result_data["Temps"],
