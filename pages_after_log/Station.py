@@ -143,7 +143,7 @@ for var, color in zip(station_variables, colors_station):
         fig_station.add_trace(go.Scatter(
             x=filtered_station["Date"],
             y=filtered_station[var],
-            mode="lines+markers",
+            mode="lines",
             name=var,
             line=dict(color=color, dash="dash" if "Objectif" in var else "solid")  # Ajouter des pointillés pour les "Objectif"
         ))
