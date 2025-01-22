@@ -44,7 +44,7 @@ elif timeframe == "Semaine":
     date_col = "Jour"
 elif timeframe == "Mois":
     # Regrouper les données par mois
-    df = daily_data.resample('M', on="Jour").sum().reset_index()
+    df = daily_data.resample('ME', on="Jour").sum().reset_index()
     date_col = "Jour"
 elif timeframe == "Année":
     # Regrouper les données par année
