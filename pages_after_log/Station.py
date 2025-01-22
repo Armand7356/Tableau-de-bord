@@ -136,7 +136,7 @@ filtered_station = filtered_station_data[["Date"] + station_variables]
 
 # Création du graphique pour la station
 fig_station = go.Figure()
-colors_station = ["blue", "green", "orange", "red", "purple", "cyan"]
+colors_station = ["blue", "green", "orange", "blue", "green", "orange"]
 
 for var, color in zip(station_variables, colors_station):
     if var in filtered_station.columns:
