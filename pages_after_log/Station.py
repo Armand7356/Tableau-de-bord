@@ -51,20 +51,24 @@ else:  # Tout
 
 
 
-# Filtrer les données selon la plage de dates
+# Vérifier que les colonnes existent dans df avant de filtrer
 if "Jour" in df.columns:
     filtered_data = df[(df["Jour"] >= pd.Timestamp(start_date)) & (df["Jour"] <= pd.Timestamp(end_date))]
 else:
     filtered_data = df
 
-
 # Variables à analyser
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
 filtered_data = filtered_data[["Jour"] + variables]
 
-# Convertir les colonnes en type numérique après filtrage
-for var in variables:
-    filtered_data[var] = pd.to_numeric(filtered_data[var], errors='coerce').fillna(0)
+# Vérifier et filtrer les colonnes disponibles
+available_variables = [col for col in variables if col in filtered_data.columns]
+if "Jour" in filtered_data.columns:
+    filtered_data = filtered_data[["Jour"] + available_variables]
+
+# Convertir les colonnes sélectionnées en type numérique (sauf 'Jour')
+for col in available_variables:
+    filtered_data[col] = pd.to_numeric(filtered_data[col], errors='coerce').fillna(0)
 
 # Graphique avec les variables sélectionnées (Graphiques linéaires)
 fig = go.Figure()
