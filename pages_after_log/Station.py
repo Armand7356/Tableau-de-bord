@@ -132,11 +132,11 @@ else:
 # Afficher les données de la station
 st.write("### Qualité de l'eau de la station")
 station_variables = ["MES", "DBO", "DCO", "Objectif MES", "Objectif DBO", "Objectif DCO"]
-filtered_station = filtered_station_data[["Date"] + station_variables]
+filtered_station = filtered_station_data["Date"].to_frame().join(filtered_station_data[station_variables], how="inner")
 
 # Création du graphique pour la station
 fig_station = go.Figure()
-colors_station = ["blue", "green", "orange", "blue", "green", "orange"]
+colors_station = ["blue", "green", "orange", "red", "purple", "cyan"]
 
 for var, color in zip(station_variables, colors_station):
     if var in filtered_station.columns:
@@ -145,9 +145,8 @@ for var, color in zip(station_variables, colors_station):
             y=filtered_station[var],
             mode="lines+markers",
             name=var,
-            line=dict(color=color)
+            line=dict(color=color, dash="dash" if "Objectif" in var else "solid")  # Ajouter des pointillés pour les "Objectif"
         ))
-
 # Configurer le graphique
 fig_station.update_layout(
     title="Qualité de l'eau de la station",
