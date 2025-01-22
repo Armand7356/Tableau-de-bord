@@ -33,16 +33,34 @@ with col3:
 def group_by_timeframe(data, timeframe, date_col):
     if timeframe == "Semaine":
         data["Semaine"] = data[date_col].dt.to_period("W-SUN")
-        grouped_data = data.groupby("Semaine").sum().reset_index()
-        grouped_data["Semaine"] = grouped_data["Semaine"].apply(lambda r: r.start_time if not pd.isnull(r) else None)
+        grouped_data = data.groupby("Semaine").agg({
+            date_col: 'first',  # Conserver une date représentative
+            "Consomation eau général": 'sum',
+            "Station pre-traitement": 'sum',
+            "Entrée Bassin": 'sum',
+            "Sortie Bassin": 'sum'
+        }).reset_index()
+        grouped_data["Jour"] = grouped_data[date_col]
     elif timeframe == "Mois":
         data["Mois"] = data[date_col].dt.to_period("M")
-        grouped_data = data.groupby("Mois").sum().reset_index()
-        grouped_data["Mois"] = grouped_data["Mois"].apply(lambda r: r.start_time if not pd.isnull(r) else None)
+        grouped_data = data.groupby("Mois").agg({
+            date_col: 'first',
+            "Consomation eau général": 'sum',
+            "Station pre-traitement": 'sum',
+            "Entrée Bassin": 'sum',
+            "Sortie Bassin": 'sum'
+        }).reset_index()
+        grouped_data["Jour"] = grouped_data[date_col]
     elif timeframe == "Année":
         data["Année"] = data[date_col].dt.to_period("A")
-        grouped_data = data.groupby("Année").sum().reset_index()
-        grouped_data["Année"] = grouped_data["Année"].apply(lambda r: r.start_time if not pd.isnull(r) else None)
+        grouped_data = data.groupby("Année").agg({
+            date_col: 'first',
+            "Consomation eau général": 'sum',
+            "Station pre-traitement": 'sum',
+            "Entrée Bassin": 'sum',
+            "Sortie Bassin": 'sum'
+        }).reset_index()
+        grouped_data["Jour"] = grouped_data[date_col]
     else:  # Tout
         grouped_data = data
     return grouped_data
