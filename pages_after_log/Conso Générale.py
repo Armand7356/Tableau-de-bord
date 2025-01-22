@@ -146,6 +146,10 @@ with cost_col2:
 with cost_col3:
     cost_gas = st.number_input("Prix gaz (€/kWh)", value=0.08, step=0.01)
 
+for var in variables:
+    filtered_data[var] = pd.to_numeric(filtered_data[var], errors='coerce').fillna(0)
+
+
 # Calcul des statistiques
 stats = {
     "Variable": ["Eau (m³)", "Gaz (kWh)", "Électricité (kWh)"],
