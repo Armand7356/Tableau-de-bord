@@ -56,15 +56,19 @@ grouped_data = group_by_timeframe(filtered_data, timeframe)
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
 result_data = grouped_data[["Temps"] + [var for var in variables if var in grouped_data.columns]]
 
+# Calcul des volumes entrants et sortants
+if "Consomation eau général" in result_data.columns and "Sortie Bassin" in result_data.columns:
+    result_data["Volume Non Sortant"] = result_data["Consomation eau général"] - result_data["Sortie Bassin"]
+
 # Afficher le tableau regroupé
 st.write("### Données regroupées")
 st.dataframe(result_data)
 
 # Création du graphique
 fig = go.Figure()
-colors = ["blue", "green", "orange", "purple"]
+colors = ["blue", "green", "orange", "purple", "red"]
 
-for var, color in zip(variables, colors):
+for var, color in zip(variables + ["Volume Non Sortant"], colors):
     if var in result_data.columns:
         fig.add_trace(go.Scatter(
             x=result_data["Temps"],
