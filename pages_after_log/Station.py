@@ -32,12 +32,18 @@ with col3:
 # Sélection des données selon la temporisation
 if timeframe == "Semaine":
     df = daily_data.set_index("Jour").resample('W').sum().reset_index()
+    for col in variables:  # Convertir les colonnes en nombres
+        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
     date_col = "Jour"
 elif timeframe == "Mois":
     df = daily_data.set_index("Jour").resample('ME').sum().reset_index()
+    for col in variables:  # Convertir les colonnes en nombres
+          df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
     date_col = "Jour"
 elif timeframe == "Année":
     df = daily_data.set_index("Jour").resample('YE').sum().reset_index()
+    for col in variables:  # Convertir les colonnes en nombres
+            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
     date_col = "Jour"
 else:  # Tout
     df = daily_data
