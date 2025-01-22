@@ -20,7 +20,8 @@ st.title("Analyse de l'Eau")
 st.write("Visualisation des consommations d'eau dans les différentes parties de l'usine")
 
 # Filtres
-col1, col2, col3 = st.columns([1, 1, 1.5])
+# Permet de sélectionner la temporalité et la plage de dates
+col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1.5])
 
 with col1:
     timeframe = st.selectbox("Temporisation", ["Semaine", "Mois", "Année", "Tout"])
@@ -31,15 +32,19 @@ with col3:
 
 # Sélection des données selon la temporisation
 if timeframe == "Semaine":
+    # Regrouper les données par semaine
     df = daily_data.resample('W', on="Jour").sum().reset_index()
     date_col = "Jour"
 elif timeframe == "Mois":
-    df = daily_data.resample('M', on="Jour").sum().reset_index()
+    # Regrouper les données par mois
+    df = daily_data.resample('ME', on="Jour").sum().reset_index()
     date_col = "Jour"
 elif timeframe == "Année":
-    df = daily_data.resample('Y', on="Jour").sum().reset_index()
+    # Regrouper les données par année
+    df = daily_data.resample('YE', on="Jour").sum().reset_index()
     date_col = "Jour"
 else:  # Tout
+    # Toutes les données sans regroupement
     df = daily_data
     date_col = "Jour"
 
