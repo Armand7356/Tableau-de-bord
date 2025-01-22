@@ -46,9 +46,15 @@ else:  # Tout
 # Filtrer les données selon la plage de dates
 filtered_data = df[(df[date_col] >= pd.Timestamp(start_date)) & (df[date_col] <= pd.Timestamp(end_date))]
 
+
+
 # Variables à analyser
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
 filtered_data = filtered_data[["Jour"] + variables]
+
+for var in variables:
+    filtered_data[var] = pd.to_numeric(filtered_data[var], errors='coerce').fillna(0)
+
 
 # Graphique avec les variables sélectionnées
 fig = go.Figure()
