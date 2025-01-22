@@ -9,11 +9,12 @@ from datetime import datetime
 def load_data(file_path):
     data = pd.ExcelFile(file_path)
     daily_data = data.parse('Conso_jour')  # Consommation journalière
-    return daily_data
+    station_data = data.parse('Station')  # Données de la station
+    return daily_data, station_data
 
 # Charger les données
 file_path = "tableau de bord Wit.xlsx"
-daily_data = load_data(file_path)
+daily_data, station_data = load_data(file_path)
 
 # Page principale
 st.title("Analyse de l'Eau")
@@ -31,7 +32,10 @@ with col3:
 
 # Prétraitement de la colonne "Jour"
 daily_data["Jour"] = pd.to_datetime(daily_data["Jour"], errors='coerce')
+station_data["Date"] = pd.to_datetime(station_data["Date"], errors='coerce')
+
 filtered_data = daily_data[(daily_data["Jour"] >= pd.Timestamp(start_date)) & (daily_data["Jour"] <= pd.Timestamp(end_date))]
+filtered_station_data = station_data[(station_data["Date"] >= pd.Timestamp(start_date)) & (station_data["Date"] <= pd.Timestamp(end_date))]
 
 # Fonction pour regrouper par plage de temps
 def group_by_timeframe(data, timeframe):
@@ -51,12 +55,14 @@ def group_by_timeframe(data, timeframe):
 
 # Regrouper les données selon la plage de temps
 grouped_data = group_by_timeframe(filtered_data, timeframe)
-st.dataframe(grouped_data)
 
 # Variables à analyser
 variables = ["Consomation eau général", "Station pre-traitement", "Entrée Bassin", "Sortie Bassin"]
 result_data = grouped_data[["Temps"] + [var for var in variables if var in grouped_data.columns]]
 
+# Calcul des volumes entrants et sortants
+if "Consomation eau général" in result_data.columns and "Sortie Bassin" in result_data.columns:
+    result_data["Volume Non Sortant"] = result_data["Consomation eau général"] - result_data["Sortie Bassin"]
 
 # Afficher le tableau regroupé
 st.write("### Données regroupées")
@@ -66,7 +72,7 @@ st.dataframe(result_data)
 fig = go.Figure()
 colors = ["blue", "green", "orange", "purple", "red"]
 
-for var, color in zip(variables, colors):
+for var, color in zip(variables + ["Volume Non Sortant"], colors):
     if var in result_data.columns:
         fig.add_trace(go.Scatter(
             x=result_data["Temps"],
@@ -123,3 +129,31 @@ if "Consomation eau général" in result_data.columns and "Sortie Bassin" in res
 else:
     st.error("Colonnes nécessaires non disponibles pour l'analyse des volumes entrants et sortants.")
 
+# Afficher les données de la station
+st.write("### Qualité de l'eau de la station")
+station_variables = ["MES", "DBO", "DCO", "Objectif MES", "Objectif DBO", "Objectif DCO"]
+filtered_station = filtered_station_data[["Date"] + station_variables]
+
+# Création du graphique pour la station
+fig_station = go.Figure()
+colors_station = ["blue", "green", "orange", "red", "purple", "cyan"]
+
+for var, color in zip(station_variables, colors_station):
+    if var in filtered_station.columns:
+        fig_station.add_trace(go.Scatter(
+            x=filtered_station["Date"],
+            y=filtered_station[var],
+            mode="lines+markers",
+            name=var,
+            line=dict(color=color)
+        ))
+
+# Configurer le graphique
+fig_station.update_layout(
+    title="Qualité de l'eau de la station",
+    xaxis_title="Date",
+    yaxis_title="Concentration (mg/L)",
+    legend=dict(orientation="h")
+)
+
+st.plotly_chart(fig_station, use_container_width=True)
