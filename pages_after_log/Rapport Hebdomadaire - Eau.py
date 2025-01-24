@@ -135,8 +135,8 @@ else:
     # Création de l'histogramme empilé
     #write_log("Création de l'histogramme empilé...")
     fig = go.Figure()
-    for col in ["Consomation eau ballon", "Consomation eau laveuse", "Consomation eau chaufferie", "Consomation eau condenseur"]:
-        if col in daily_data.columns:
+    for col in daily_data.columns:
+        if "Consomation eau" in col and col != "Consomation eau chaudière vapeur" and col != "Consomation eau général":
             fig.add_trace(go.Bar(
                 x=daily_data.index,
                 y=daily_data[col],
@@ -147,11 +147,9 @@ else:
 
     # Ajouter une colonne "Autres"
     if "Consomation eau général" in daily_data.columns:
-        daily_data["eau Autres"] = daily_data["Consomation eau général"] - (
-            daily_data.get("Consomation eau ballon", 0) +
-            daily_data.get("Consomation eau laveuse", 0) +
-            daily_data.get("Consomation eau chauferie", 0)
-        ).clip(lower=0)
+        columns_to_sum = [col for col in daily_data.columns if "Consomation eau" in col and col != "Consomation eau général" and col != "Consomation eau chaudière vapeur"]
+        daily_data["eau Autres"] = daily_data["Consomation eau général"] - daily_data[columns_to_sum].sum(axis=1).clip(lower=0)
+
             
         
         fig.add_trace(go.Bar(

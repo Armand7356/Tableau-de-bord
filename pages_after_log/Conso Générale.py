@@ -151,7 +151,7 @@ for var in variables:
 
 # Calcul des statistiques
 stats = {
-    "Variable": ["Eau (m³)", "Gaz (kWh)", "Électricité (kWh)"],
+    "Variable": ["Gaz (kWh)", "Électricité (kWh)","Eau (m³)"],
     "Moyenne": [filtered_data[var].mean() for var in variables],
     "Somme": [filtered_data[var].sum() for var in variables],
     "Prix (€)": [
