@@ -150,8 +150,6 @@ else:
         columns_to_sum = [col for col in daily_data.columns if "Consomation eau" in col and col != "Consomation eau général" and col != "Consomation eau chaudière vapeur"]
         daily_data["eau Autres"] = daily_data["Consomation eau général"] - daily_data[columns_to_sum].sum(axis=1).clip(lower=0)
 
-            
-        
         fig.add_trace(go.Bar(
             x=daily_data.index,
             y=daily_data["eau Autres"],

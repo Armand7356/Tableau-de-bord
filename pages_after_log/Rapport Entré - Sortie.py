@@ -17,7 +17,7 @@ file_path = "tableau de bord Wit.xlsx"
 daily_data, station_data = load_data(file_path)
 
 # Page principale
-st.title("Analyse de l'Eau")
+st.title("Rapport Entré / Sortie")
 st.write("Visualisation des consommations d'eau dans les différentes parties de l'usine")
 
 # Filtres
@@ -128,6 +128,7 @@ if "Consomation eau général" in result_data.columns and "Sortie Bassin" in res
         st.warning("Les volumes calculés ne sont pas valides pour tracer un diagramme.")
 else:
     st.error("Colonnes nécessaires non disponibles pour l'analyse des volumes entrants et sortants.")
+
 
 # Afficher les données de la station
 st.write("### Qualité de l'eau de la station")
