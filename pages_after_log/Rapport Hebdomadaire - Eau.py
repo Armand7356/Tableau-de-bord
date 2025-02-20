@@ -240,3 +240,20 @@ fig_weekly.update_layout(
 st.plotly_chart(fig_weekly, use_container_width=True)
 
 
+# Ajouter un diagramme en cercle pour la répartition des volumes consommés
+st.write("### Répartition des volumes consommés")
+if "Consomation eau général" in result_data.columns:
+    consumption_columns = [col for col in result_data.columns if "Consomation eau" in col and col != "Consomation eau général"]
+    if consumption_columns:
+        total_consumptions = result_data[consumption_columns].sum()
+        fig_pie = go.Figure()
+        fig_pie.add_trace(go.Pie(
+            labels=consumption_columns,
+            values=total_consumptions,
+            hole=0.4,
+            marker=dict(colors=px.colors.qualitative.Set3)
+        ))
+        fig_pie.update_layout(title="Répartition des consommations d'eau sur la semaine")
+        st.plotly_chart(fig_pie, use_container_width=True)
+    else:
+        st.warning("Aucune donnée disponible pour la répartition des consommations d'eau.")
