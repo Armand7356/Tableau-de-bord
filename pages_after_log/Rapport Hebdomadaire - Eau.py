@@ -225,6 +225,7 @@ for i, (day, day_data) in enumerate(hourly_data.iterrows()):
 
 # Création du diagramme en cercle pour la semaine entière
 #write_log("Création du diagramme en cercle pour la semaine entière...")
+st.write("### Répartition des consommations par tranches horaires")
 weekly_totals = hourly_data.sum()
 fig_weekly = go.Figure()
 fig_weekly.add_trace(go.Pie(
@@ -253,7 +254,7 @@ if "filtered_table" in locals() or "filtered_table" in globals():
             hole=0.4,
             marker=dict(colors=go.Figure().layout.template.layout.colorway)
         ))
-        fig_pie.update_layout(title="Répartition des consommations d'eau sur la semaine")
+        fig_pie.update_layout(title=f"Répartition des consommations d'eau - Semaine n°{week_number} {year}")
         st.plotly_chart(fig_pie, use_container_width=True)
     else:
         st.warning("Aucune donnée disponible pour la répartition des consommations d'eau.")
