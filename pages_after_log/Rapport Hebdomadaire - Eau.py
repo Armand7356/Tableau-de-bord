@@ -106,8 +106,13 @@ df_hourly["Annee"] = df_hourly["DateTime"].dt.year
 
 #write_log("Filtrage des données horaires pour la semaine sélectionnée...")
 filtered_data = df_hourly[(df_hourly["Semaine"] == week_number) & (df_hourly["Annee"] == year)]
-filtered_data = filtered_data[filtered_data["DateTime"].dt.hour >= start_hour]
-filtered_data = filtered_data[filtered_data["DateTime"] < (filtered_data["DateTime"].max() + timedelta(days=1))]
+
+# Ajuster la plage de temps : début à start_hour, fin à start_hour + 24h (le lendemain avant la même heure)
+filtered_data = filtered_data[
+    (filtered_data["DateTime"] >= filtered_data["DateTime"].dt.normalize() + pd.to_timedelta(start_hour, unit="h")) &
+    (filtered_data["DateTime"] < filtered_data["DateTime"].dt.normalize() + pd.to_timedelta(start_hour + 24, unit="h"))
+]
+
 #write_log(f"Données horaires filtrées : {filtered_data.to_string()}")
 
 if filtered_data.empty:
