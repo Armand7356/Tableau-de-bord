@@ -70,9 +70,9 @@ st.dataframe(result_data)
 
 # Création du graphique
 fig = go.Figure()
-colors = ["blue", "green", "orange", "purple", "red"]
+colors = ["blue", "green", "orange", "purple"] #, "red"]
 
-for var, color in zip(variables + ["Volume Non Sortant"], colors):
+for var, color in zip(variables, colors ): # + ["Volume Non Sortant"], colors):
     if var in result_data.columns:
         fig.add_trace(go.Scatter(
             x=result_data["Temps"],
