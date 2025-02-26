@@ -112,13 +112,13 @@ y2_dtick = (y1_max - y1_min) / 1000  # 10 intervalles pour l'axe principal
 fig.update_layout(
     yaxis=dict(
         title="Consommation Gaz/Élec (kWh)",
-        titlefront=dict(color="orange"),
+        #titlefront=dict(color="orange"),
         side="left",
         range=[0, y1_max * 1.1]  # Ajouter une marge de 10 %
     ),
     yaxis2=dict(
         title="Consommation Eau (m³)",
-        titlefront=dict(color="blue"),
+        #titlefront=dict(color="blue"),
         overlaying="y",
         side="right",
         range=[0, y1_max*0.01 * 1.1]
