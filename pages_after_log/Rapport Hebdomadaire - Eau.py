@@ -114,7 +114,7 @@ filtered_data = filtered_data[
     (filtered_data["DateTime"] < filtered_data["DateTime"].dt.normalize() + pd.to_timedelta(start_hour + 24, unit="h"))
 ]
 
-write_log(f"Données horaires filtrées : {filtered_data.to_string()}")
+#write_log(f"Données horaires filtrées : {filtered_data.to_string()}")
 
 if filtered_data.empty:
     st.warning("Aucune donnée disponible pour la semaine sélectionnée.")
