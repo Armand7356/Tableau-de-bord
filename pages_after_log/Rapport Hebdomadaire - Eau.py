@@ -165,6 +165,7 @@ else:
         "Consomation eau MP Incrustation",
         "Consomation eau MP prépa glace"
     ]
+    
 
     # Ajout des compteurs de niveau 2 uniquement (hors sous-compteurs ballon)
     for col in daily_data.columns:
@@ -212,7 +213,7 @@ else:
 ################################
 ##############################
 ############################
-
+"""
     # Graphique de décomposition des sous-compteurs du ballon
     if all(col in daily_data.columns for col in ballon_sous_compteurs):
         st.write("### Détail des consommations sous le Ballon d'eau chaude")
@@ -229,7 +230,7 @@ else:
             legend=dict(traceorder="normal")
         )
         st.plotly_chart(fig_ballon, use_container_width=True)
-
+"""
 ############################
 ##############################
 ################################
