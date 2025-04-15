@@ -290,7 +290,9 @@ st.plotly_chart(fig_weekly, use_container_width=True)
 # Ajouter un diagramme en cercle pour la répartition des volumes consommés
 st.write("### Répartition des volumes consommés")
 if "filtered_table" in locals() or "filtered_table" in globals():
-    consumption_columns = [col for col in filtered_table.columns if "Consomation eau" in col and col != "Consomation eau général"]
+    consumption_columns = [col for col in filtered_table.columns if "Consomation eau" in col and
+                        col != "Consomation eau général" and 
+                        "MP" not in col]
     if consumption_columns:
         total_consumptions = filtered_table.loc["Somme", consumption_columns]
         fig_pie = go.Figure()
