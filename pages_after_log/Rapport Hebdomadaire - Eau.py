@@ -142,7 +142,7 @@ else:
     #write_log("Création de l'histogramme empilé...")
     
     fig = go.Figure()
-    """
+    
     for col in daily_data.columns:
         if "Consomation eau" in col and col != "Consomation eau chaudière vapeur" and col != "Consomation eau général":
             fig.add_trace(go.Bar(
@@ -150,10 +150,11 @@ else:
                 y=daily_data[col],
                 name=col.replace("Consomation", "").strip()
             ))
-    """
+    
 ################################
 ################################
 ################################
+"""
     # Sous-compteurs du ballon d'eau chaude
     ballon_sous_compteurs = [
         "Consomation eau MP tunnel 1",
@@ -205,7 +206,7 @@ else:
             legendgroup="Ballon",
             offsetgroup="Ballon"
         ))
-
+"""
 ################################
 ################################
 ################################
@@ -233,6 +234,25 @@ else:
         legend_title="Catégories",
     )
     st.plotly_chart(fig, use_container_width=True)
+
+
+    # Graphique de décomposition des sous-compteurs du ballon
+    if all(col in daily_data.columns for col in ballon_sous_compteurs):
+        st.write("### Détail des consommations sous le Ballon d'eau chaude")
+        ballon_total = daily_data[ballon_sous_compteurs].sum()
+
+        fig_ballon = go.Figure()
+        fig_ballon.add_trace(go.Pie(
+            labels=[label.replace("Consomation eau", "").strip() for label in ballon_sous_compteurs],
+            values=ballon_total,
+            hole=0.4
+        ))
+        fig_ballon.update_layout(
+            title="Répartition des sous-compteurs du Ballon d'eau chaude",
+            legend=dict(traceorder="normal")
+        )
+        st.plotly_chart(fig_ballon, use_container_width=True)
+
 
     # Ajouter un filtre pour n'afficher que les colonnes contenant "eau"
     filtered_columns = [col for col in daily_data.columns if "eau" in col.lower()]
