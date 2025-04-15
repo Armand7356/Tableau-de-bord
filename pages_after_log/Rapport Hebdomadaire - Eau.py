@@ -152,8 +152,8 @@ else:
             ))
     """
 ################################
-################################
-################################
+##############################
+############################
 
     # Définir les sous-compteurs du ballon pour les exclure de l'histogramme principal
     ballon_sous_compteurs = [
@@ -181,8 +181,8 @@ else:
             ))
 
 
-################################
-################################
+############################
+##############################
 ################################
 
 
@@ -209,6 +209,9 @@ else:
     )
     st.plotly_chart(fig, use_container_width=True)
 
+################################
+##############################
+############################
 
     # Graphique de décomposition des sous-compteurs du ballon
     if all(col in daily_data.columns for col in ballon_sous_compteurs):
@@ -227,6 +230,9 @@ else:
         )
         st.plotly_chart(fig_ballon, use_container_width=True)
 
+############################
+##############################
+################################
 
     # Ajouter un filtre pour n'afficher que les colonnes contenant "eau"
     filtered_columns = [col for col in daily_data.columns if "eau" in col.lower()]
