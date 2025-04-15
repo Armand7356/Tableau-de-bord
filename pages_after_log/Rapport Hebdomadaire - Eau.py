@@ -155,16 +155,7 @@ else:
 ##############################
 ############################
 
-    # Définir les sous-compteurs du ballon pour les exclure de l'histogramme principal
-    ballon_sous_compteurs = [
-        "Consomation eau MP tunnel 1",
-        "Consomation eau MP Tunnel 2",
-        "Consomation eau MP tunnel 3",
-        "Consomation eau MP Salle cuisson",
-        "Consomation eau MP Salle lavage",
-        "Consomation eau MP Incrustation",
-        "Consomation eau MP prépa glace"
-    ]
+
     
 
     # Ajout des compteurs de niveau 2 uniquement (hors sous-compteurs ballon)
@@ -173,12 +164,12 @@ else:
             "Consomation eau" in col and 
             col != "Consomation eau chaudière vapeur" and 
             col != "Consomation eau général" and 
-            col not in ballon_sous_compteurs
+            "MP" not in col
         ):
             fig.add_trace(go.Bar(
                 x=daily_data.index,
                 y=daily_data[col],
-                name=col.replace("Consomation", "").strip()
+                name=col.replace("Consomation eau", "").strip()
             ))
 
 
@@ -190,7 +181,11 @@ else:
 
     # Ajouter une colonne "Autres"
     if "Consomation eau général" in daily_data.columns:
-        columns_to_sum = [col for col in daily_data.columns if "Consomation eau" in col and col != "Consomation eau général" and col != "Consomation eau chaudière vapeur"]
+        columns_to_sum = [col for col in daily_data.columns 
+                          if "Consomation eau" in col and 
+                          col != "Consomation eau général" and 
+                          col != "Consomation eau chaudière vapeur"
+                          and "MP" not in col]
         daily_data["eau Autres"] = daily_data["Consomation eau général"] - daily_data[columns_to_sum].sum(axis=1).clip(lower=0)
 
         fig.add_trace(go.Bar(
