@@ -213,24 +213,7 @@ else:
 ################################
 ##############################
 ############################
-"""
-    # Graphique de décomposition des sous-compteurs du ballon
-    if all(col in daily_data.columns for col in ballon_sous_compteurs):
-        st.write("### Détail des consommations sous le Ballon d'eau chaude")
-        ballon_total = daily_data[ballon_sous_compteurs].sum()
 
-        fig_ballon = go.Figure()
-        fig_ballon.add_trace(go.Pie(
-            labels=[label.replace("Consomation eau", "").strip() for label in ballon_sous_compteurs],
-            values=ballon_total,
-            hole=0.4
-        ))
-        fig_ballon.update_layout(
-            title="Répartition des sous-compteurs du Ballon d'eau chaude",
-            legend=dict(traceorder="normal")
-        )
-        st.plotly_chart(fig_ballon, use_container_width=True)
-"""
 ############################
 ##############################
 ################################
