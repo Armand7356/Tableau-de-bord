@@ -140,7 +140,9 @@ else:
 
     # Création de l'histogramme empilé
     #write_log("Création de l'histogramme empilé...")
+    
     fig = go.Figure()
+    """
     for col in daily_data.columns:
         if "Consomation eau" in col and col != "Consomation eau chaudière vapeur" and col != "Consomation eau général":
             fig.add_trace(go.Bar(
@@ -148,6 +150,65 @@ else:
                 y=daily_data[col],
                 name=col.replace("Consomation", "").strip()
             ))
+    """
+################################
+################################
+################################
+    # Sous-compteurs du ballon d'eau chaude
+    ballon_sous_compteurs = [
+        "Consomation eau MP tunnel 1",
+        "Consomation eau MP Tunnel 2",
+        "Consomation eau MP tunnel 3",
+        "Consomation eau MP Salle cuisson",
+        "Consomation eau MP Salle lavage",
+        "Consomation eau MP Incrustation",
+        "Consomation eau MP prépa glace"
+    ]
+
+    # Autres compteurs à afficher (hors général, chaudière vapeur, ballon détaillé)
+    for col in daily_data.columns:
+        if (
+            "Consomation eau" in col and
+            col != "Consomation eau chaudière vapeur" and
+            col != "Consomation eau général" and
+            col != "Consomation eau Ballon d'eau chaude" and
+            col not in ballon_sous_compteurs
+        ):
+            fig.add_trace(go.Bar(
+                x=daily_data.index,
+                y=daily_data[col],
+                name=col.replace("Consomation", "").strip()
+            ))
+
+    # Affichage détaillé du ballon d’eau chaude en empilé
+    if "Consomation eau Ballon d'eau chaude" in daily_data.columns:
+        ballon_total = daily_data["Consomation eau Ballon d'eau chaude"]
+        ballon_mesures = daily_data[ballon_sous_compteurs].sum(axis=1)
+        ballon_autres = (ballon_total - ballon_mesures).clip(lower=0)
+
+        # Sous-compteurs
+        for col in ballon_sous_compteurs:
+            if col in daily_data.columns:
+                fig.add_trace(go.Bar(
+                    x=daily_data.index,
+                    y=daily_data[col],
+                    name=col.replace("Consomation eau", "").strip(),
+                    legendgroup="Ballon",
+                    offsetgroup="Ballon"
+                ))
+
+        # Autres non mesurés du ballon
+        fig.add_trace(go.Bar(
+            x=daily_data.index,
+            y=ballon_autres,
+            name="Ballon - Autres",
+            legendgroup="Ballon",
+            offsetgroup="Ballon"
+        ))
+
+################################
+################################
+################################
 
 
 
