@@ -80,7 +80,7 @@ with col2:
 with col3:
 
     # Choix de l'heure de début de journée
-    start_hour = st.number_input("Heure de début de journée :", min_value=0, max_value=23, value=5, step=1)
+    start_hour = 0 #st.number_input("Heure de début de journée :", min_value=0, max_value=23, value=5, step=1)
     #write_log(f"Heure de début de journée sélectionnée : {start_hour}")
 with col4:
     # Définir les plages horaires
@@ -135,7 +135,7 @@ else:
     # Création de l'histogramme empilé
     #write_log("Création de l'histogramme empilé...")
     fig = go.Figure()
-    for col in ["Consomation gaz chaudiere 1", "Consomation gaz chaudiere 2"]:
+    for col in ["Consomation gaz chaudiere 1", "Consomation gaz chaudiere 2","Consomation gaz ballon"]:
         if col in daily_data.columns:
             fig.add_trace(go.Bar(
                 x=daily_data.index,
@@ -149,7 +149,9 @@ else:
     if "Consomation gaz général" in daily_data.columns:
         daily_data["gaz Autres"] = daily_data["Consomation gaz général"] - (
             daily_data.get("Consomation gaz chaudiere 1", 0) +
-            daily_data.get("Consomation gaz chaudiere 2", 0)
+            daily_data.get("Consomation gaz chaudiere 2", 0)+
+            daily_data.get("Consomation gaz ballon", 0)
+            
         ).clip(lower=0)
             
         
@@ -255,3 +257,21 @@ fig_weekly.update_layout(
 st.plotly_chart(fig_weekly, use_container_width=True)
 
 
+# Ajouter un diagramme en cercle pour la répartition des volumes consommés
+st.write("### Répartition des volumes consommés")
+if "filtered_table" in locals() or "filtered_table" in globals():
+    consumption_columns = [col for col in filtered_table.columns if "Consomation gaz" in col and
+                        col != "Consomation gaz général"]
+    if consumption_columns:
+        total_consumptions = filtered_table.loc["Somme", consumption_columns]
+        fig_pie = go.Figure()
+        fig_pie.add_trace(go.Pie(
+            labels=consumption_columns,
+            values=total_consumptions,
+            hole=0.4,
+            marker=dict(colors=go.Figure().layout.template.layout.colorway)
+        ))
+        fig_pie.update_layout(title=f"Répartition des consommations d'eau - Semaine n°{week_number} {year}")
+        st.plotly_chart(fig_pie, use_container_width=True)
+    else:
+        st.warning("Aucune donnée disponible pour la répartition des consommations d'eau.")
