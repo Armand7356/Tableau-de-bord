@@ -60,12 +60,11 @@ with col2:
     year = st.number_input("Choisissez l'année :", value=default_start_date.year, step=1)
     #write_log(f"Année sélectionnée : {year}")
 
-with col3:
 
-    # Choix de l'heure de début de journée
-    start_hour = 0 # st.number_input("Heure de début de journée :", min_value=0, max_value=23, value=5, step=1)
-    #write_log(f"Heure de début de journée sélectionnée : {start_hour}")
-with col4:
+# Choix de l'heure de début de journée
+start_hour = 0 # st.number_input("Heure de début de journée :", min_value=0, max_value=23, value=5, step=1)
+#write_log(f"Heure de début de journée sélectionnée : {start_hour}")
+with col3:
     # Définir les plages horaires
     default_time_ranges = [(5, 16), (16, 21), (21, 5)]
     time_ranges = st.text_input(
