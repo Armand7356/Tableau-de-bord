@@ -62,7 +62,7 @@ df_hourly = data.parse("Conso_h")
 st.title("Rapport Hebdomadaire - Gaz")
 
 # Create a horizontal layout for filters
-col1, col2, col3, col4 = st.columns([1.7, 1.2, 1.2, 2])
+col1, col2, col3, col4 = st.columns([1.9, 1.5, 2.2, 0.5])
 
 with col1:
 
