@@ -63,7 +63,7 @@ with col2:
 with col3:
 
     # Choix de l'heure de début de journée
-    start_hour = st.number_input("Heure de début de journée :", min_value=0, max_value=23, value=5, step=1)
+    start_hour = 0 # st.number_input("Heure de début de journée :", min_value=0, max_value=23, value=5, step=1)
     #write_log(f"Heure de début de journée sélectionnée : {start_hour}")
 with col4:
     # Définir les plages horaires
