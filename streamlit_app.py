@@ -103,8 +103,8 @@ else:
         available_pages = [page for page in available_pages if page != "Gestion utilisateurs" 
                            and page != "Acces Logs" 
                            and page != "Conso Générale" 
-                           and page != "Acces Logs"
-                           and page != "Acces Logs"]
+                           and page != "Conso Générale"
+                           and page != "Conso Générale"]
         
     # Sélection de la page via le menu de navigation
     selected_page = st.sidebar.radio("Choisissez une page", available_pages)
