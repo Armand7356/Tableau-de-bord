@@ -117,3 +117,6 @@
 2025-04-22 07:55:44 - production (127.0.0.1) - Page Menu
 2025-04-22 07:56:05 - production (127.0.0.1) - Page Rapport hebdomadaire EAU
 2025-04-22 07:56:25 - production (127.0.0.1) - Page Rapport hebdomadaire elec
+2025-04-22 08:03:56 - Admin (127.0.0.1) - Connexion réussie : Admin
+2025-04-22 08:04:01 - Admin (127.0.0.1) - Page Acces logs
+2025-04-22 08:04:03 - Admin (127.0.0.1) - Page Rapport hebdomadaire EAU
