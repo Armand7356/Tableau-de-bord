@@ -1,0 +1,236 @@
+import pandas as pd
+import streamlit as st
+import plotly.graph_objects as go
+from datetime import datetime, timedelta
+import locale
+import io
+import requests
+import pandas as pd
+from io import BytesIO
+
+# Configurer la locale pour les noms des jours en français
+locale.setlocale(locale.LC_TIME, "C")
+
+
+# Dictionnaire pour traduire les jours de la semaine en français
+days_translation = {
+    "Monday": "Lundi",
+    "Tuesday": "Mardi",
+    "Wednesday": "Mercredi",
+    "Thursday": "Jeudi",
+    "Friday": "Vendredi",
+    "Saturday": "Samedi",
+    "Sunday": "Dimanche",
+}
+
+# Fonction pour obtenir un nom de jour en français
+def get_french_day(date):
+    day_english = date.strftime("%A")  # Nom du jour en anglais
+    return days_translation.get(day_english, day_english)  # Traduction en français
+
+# Fonction pour obtenir l'adresse IP de l'utilisateur
+def get_user_ip():
+    try:
+        hostname = socket.gethostname()
+        return socket.gethostbyname(hostname)
+    except Exception as e:
+        return "IP inconnue"
+
+# Fonction pour écrire dans un fichier log
+def write_log(message):
+    user = st.session_state.get("username", "Utilisateur inconnu")
+    user_ip = get_user_ip()
+    with open("log.txt", "a") as log_file:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_file.write(f"{timestamp} - {user} ({user_ip}) - {message}\n")
+
+write_log("Page Rapport hebdomadaire EAU")
+
+# Charger les données Excel
+#write_log("Chargement du fichier Excel...")
+file_path = "tableau de bord Wit.xlsx"
+data = pd.ExcelFile(file_path)
+#write_log(f"Fichier chargé avec succès : {data.sheet_names}")
+
+
+# Charger les données horaires
+#write_log("Chargement des données horaires...")
+df_hourly = data.parse("Conso_h")
+#write_log(f"Aperçu des données horaires : {df_hourly.head().to_string()}")
+
+# Configurer la page
+st.title("Rapport Hebdomadaire - EAU")
+
+# Create a horizontal layout for filters
+col1, col2, col3, col4 = st.columns([1.9, 1.5, 2.2, 0.5])
+
+with col1:
+
+    # Sélection de la semaine
+    current_date = datetime.now()
+    default_start_date = (current_date - timedelta(days=current_date.weekday(), weeks=1)).date()
+    week_number = st.number_input("Choisissez le numéro de la semaine :", value=default_start_date.isocalendar()[1], step=1)
+    #write_log(f"Numéro de la semaine sélectionnée : {week_number}")
+
+with col2:
+
+    year = st.number_input("Choisissez l'année :", value=default_start_date.year, step=1)
+    #write_log(f"Année sélectionnée : {year}")
+
+with col4:
+
+    # Choix de l'heure de début de journée
+    #start_hour = st.number_input("Heure de début de journée :", min_value=0, max_value=23, value=0, step=1)
+    start_hour=0
+    #write_log(f"Heure de début de journée sélectionnée : {start_hour}")
+
+
+# Filtrer les données horaires pour la semaine sélectionnée
+#write_log("Conversion des dates horaires et ajout des colonnes Semaine et Annee...")
+df_hourly["DateTime"] = pd.to_datetime(df_hourly["Date /h"], errors='coerce')
+df_hourly["Semaine"] = df_hourly["DateTime"].dt.isocalendar().week
+df_hourly["Annee"] = df_hourly["DateTime"].dt.year
+#write_log("Dates horaires converties avec succès.")
+
+#write_log("Filtrage des données horaires pour la semaine sélectionnée...")
+filtered_data = df_hourly[(df_hourly["Semaine"] == week_number) & (df_hourly["Annee"] == year)]
+
+# Ajuster la plage de temps : début à start_hour, fin à start_hour + 24h (le lendemain avant la même heure)
+filtered_data = filtered_data[
+    (filtered_data["DateTime"] >= filtered_data["DateTime"].dt.normalize() + pd.to_timedelta(start_hour, unit="h")) &
+    (filtered_data["DateTime"] < filtered_data["DateTime"].dt.normalize() + pd.to_timedelta(start_hour + 24, unit="h"))
+]
+
+#write_log(f"Données horaires filtrées : {filtered_data.to_string()}")
+
+if filtered_data.empty:
+    st.warning("Aucune donnée disponible pour la semaine sélectionnée.")
+    #write_log("Aucune donnée disponible pour la semaine sélectionnée.")
+else:
+    # Ajuster les données pour refléter les jours de 5h à 5h (ou heure choisie)
+    #write_log("Ajustement des données horaires pour le découpage des jours...")
+    filtered_data["Jour"] = (filtered_data["DateTime"] - pd.to_timedelta((filtered_data["DateTime"].dt.hour < start_hour).astype(int), unit="D")).dt.date
+
+    # Exclure les colonnes non numériques et celles contenant "Cpt" pour l'agrégation
+    numeric_columns = filtered_data.select_dtypes(include=['number']).columns
+    numeric_columns = [col for col in numeric_columns if "Cpt" not in col]
+    numeric_columns = [col for col in numeric_columns if "eau" in col.lower()]
+    daily_data = filtered_data.groupby("Jour")[numeric_columns].sum()
+
+    # S'assurer que l'index est au format datetime
+    daily_data.index = pd.to_datetime(daily_data.index)
+
+    # Limiter aux jours de Lundi (0) à Dimanche (6)
+    daily_data = daily_data.loc[daily_data.index.dayofweek < 7]
+
+    #write_log(f"Données journalières calculées : {daily_data.to_string()}")
+
+    # Création de l'histogramme empilé
+    #write_log("Création de l'histogramme empilé...")
+    
+    fig = go.Figure()
+    """
+    for col in daily_data.columns:
+        if "Consomation eau" in col and col != "Consomation eau chaudière vapeur" and col != "Consomation eau général":
+            fig.add_trace(go.Bar(
+                x=daily_data.index,
+                y=daily_data[col],
+                name=col.replace("Consomation", "").strip()
+            ))
+    """
+################################
+##############################
+############################
+
+
+    
+
+    # Ajout des compteurs de niveau 2 uniquement (hors sous-compteurs ballon)
+    for col in daily_data.columns:
+        if (
+            "Consomation eau" in col and 
+            col != "Consomation eau chaudière vapeur" and 
+            col != "Consomation eau général" and 
+            "MP" not in col
+        ):
+            fig.add_trace(go.Bar(
+                x=daily_data.index,
+                y=daily_data[col],
+                name=col.replace("Consomation eau", "").strip()
+            ))
+
+
+############################
+##############################
+################################
+
+
+
+    # Ajouter une colonne "Autres"
+    if "Consomation eau général" in daily_data.columns:
+        columns_to_sum = [col for col in daily_data.columns 
+                          if "Consomation eau" in col and 
+                          col != "Consomation eau général" and 
+                          col != "Consomation eau chaudière vapeur"
+                          and "MP" not in col]
+        daily_data["eau Autres"] = daily_data["Consomation eau général"] - daily_data[columns_to_sum].sum(axis=1).clip(lower=0)
+
+        fig.add_trace(go.Bar(
+            x=daily_data.index,
+            y=daily_data["eau Autres"],
+            name="Autres"
+        ))
+
+    # Configurer et afficher l'histogramme
+    fig.update_layout(
+        template="plotly_white",
+        barmode="stack",
+        title=f"Consommation Générale d'Eau - Semaine {week_number} {year}",
+        xaxis_title="Jour",
+        yaxis_title="Consommation (m³)",
+        legend_title="Catégories",
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+################################
+##############################
+############################
+
+############################
+##############################
+################################
+
+    # Ajouter un filtre pour n'afficher que les colonnes contenant "eau"
+    filtered_columns = [col for col in daily_data.columns if "eau" in col.lower()]
+    filtered_table = daily_data[filtered_columns]
+
+    # Ajouter les lignes moyenne et somme au tableau des données filtrées
+    filtered_table.loc['Moyenne'] = filtered_table.mean()
+    filtered_table.loc['Somme'] = filtered_table.sum()-filtered_table.loc['Moyenne']
+
+    # Afficher le tableau des valeurs de consommation pour la semaine
+    st.write("### Données de consommation sur la semaine")
+    st.dataframe(filtered_table)
+###################################
+
+# Ajouter un diagramme en cercle pour la répartition des volumes consommés
+st.write("### Répartition des volumes consommés")
+if "filtered_table" in locals() or "filtered_table" in globals():
+    consumption_columns = [col for col in filtered_table.columns if "Consomation eau" in col and
+                        col != "Consomation eau général" and 
+                        "MP" not in col]
+    if consumption_columns:
+        total_consumptions = filtered_table.loc["Somme", consumption_columns]
+        fig_pie = go.Figure()
+        fig_pie.add_trace(go.Pie(
+            labels=consumption_columns,
+            values=total_consumptions,
+            hole=0.4,
+            marker=dict(colors=go.Figure().layout.template.layout.colorway)
+        ))
+        fig_pie.update_layout(title=f"Répartition des consommations d'eau - Semaine n°{week_number} {year}")
+        st.plotly_chart(fig_pie, use_container_width=True)
+    else:
+        st.warning("Aucune donnée disponible pour la répartition des consommations d'eau.")
+
+

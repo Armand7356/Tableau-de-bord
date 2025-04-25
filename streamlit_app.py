@@ -85,42 +85,41 @@ else:
     # Interface principale après connexion
     st.sidebar.title(f"Bienvenue, {st.session_state.username} !")
 
-    # Navigation vers les pages
     pages_directory = "pages_after_log"
-    available_pages = [
-        file.replace(".py", "") for file in os.listdir(pages_directory) if file.endswith(".py")
-    ]
 
-    
+    # Scan des sous-dossiers et des fichiers .py
+    page_structure = {}
+    for root, dirs, files in os.walk(pages_directory):
+        relative_root = os.path.relpath(root, pages_directory)
+        if relative_root == ".":
+            continue  # on saute la racine directe
+        section = relative_root.replace("\\", "/")  # Windows-friendly
+        page_structure[section] = [file.replace(".py", "") for file in files if file.endswith(".py")]
 
-    # Récupérer les fichiers et trier par ordre alphabétique
-    available_pages = sorted(
-    [file.replace(".py", "") for file in os.listdir(pages_directory) if file.endswith(".py")]
-)
+    if not page_structure:
+        st.error("Aucune page trouvée dans l'arborescence.")
+    else:
+        # Sélectionner un dossier (section)
+        selected_section = st.sidebar.selectbox("Choisissez un rapport :", sorted(page_structure.keys()))
 
-    # Restreindre l'accès à certaines pages (exemple : "Gestion utilisateurs" uniquement pour Admin)
-    if st.session_state.username != "Admin":
-        available_pages = [page for page in available_pages if page != "Gestion utilisateurs" 
-                           and page != "Acces Logs" 
-                           and page != "Conso Générale" 
-                           and page != "Conso Générale"
-                           and page != "Conso Générale"]
-        
-    # Sélection de la page via le menu de navigation
-    selected_page = st.sidebar.radio("Choisissez une page", available_pages)
+        # Ensuite, choisir la page dans ce dossier
+        if selected_section:
+            selected_page = st.sidebar.radio(f"Pages dans {selected_section} :", page_structure[selected_section])
 
-    # Charger dynamiquement la page sélectionnée
-    if selected_page:
-        try:
-            with open(f"{pages_directory}/{selected_page}.py", "r") as f:
-                exec(f.read())  # Charge et exécute le contenu de la page
-        except Exception as e:
-            st.error(f"Erreur lors du chargement de la page {selected_page}: {e}")
+            # Charger dynamiquement
+            if selected_page:
+                try:
+                    page_path = os.path.join(pages_directory, selected_section, selected_page + ".py")
+                    with open(page_path, "r", encoding="utf-8") as f:
+                        exec(f.read())
+                except Exception as e:
+                    st.error(f"Erreur lors du chargement de {selected_page} : {e}")
 
-    # Bouton de déconnexion
+    # Déconnexion
     if st.sidebar.button("Se déconnecter"):
         st.session_state.authenticated = False
         st.session_state.username = None
         st.experimental_rerun()
+
 
 

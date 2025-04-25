@@ -410,3 +410,80 @@ if "filtered_table" in locals() or "filtered_table" in globals():
         st.plotly_chart(fig_pie, use_container_width=True)
     else:
         st.warning("Aucune donnée disponible pour la répartition des consommations d'eau.")
+
+
+
+        st.write("### Définir vos plages horaires")
+
+#############################
+
+#############################
+
+#############################
+import streamlit as st
+from streamlit_elements import elements, mui, sync
+
+#st.set_page_config(layout="wide")
+
+st.title("🕐 Timeline Interactive - Plages Horaires")
+
+st.write("Déplacez les curseurs pour découper la journée.")
+
+# Valeurs initiales (en heures)
+default_marks = {
+    0: "00:00",
+    6: "06:00",
+    12: "12:00",
+    18: "18:00",
+    24: "24:00"
+}
+
+# Stockage des valeurs de curseurs
+if "slider_values" not in st.session_state:
+    st.session_state.slider_values = [5, 16, 21]
+
+# Fonction de mise à jour
+def update_slider(values):
+    st.session_state.slider_values = values
+
+# Interface interactive
+with elements("timeline"):
+    sync()  # Important pour synchroniser avec Streamlit
+
+    mui.Box(
+        sx={"width": "100%", "padding": "30px"},
+        children=[
+            mui.Slider(
+                value=st.session_state.slider_values,
+                min=0,
+                max=24,
+                step=1,
+                marks=[{"value": v, "label": t} for v, t in default_marks.items()],
+                onChange=lambda e, v: update_slider(v),
+                valueLabelDisplay="on",
+                disableSwap=True
+            )
+        ]
+    )
+
+# Génération automatique des plages horaires à partir des curseurs
+slider_values = sorted(st.session_state.slider_values)
+ranges = []
+
+# Plages de 0 -> premier curseur, puis entre chaque curseur, puis dernier curseur -> 24
+if slider_values[0] != 0:
+    ranges.append((0, slider_values[0]))
+
+for i in range(len(slider_values) - 1):
+    ranges.append((slider_values[i], slider_values[i+1]))
+
+if slider_values[-1] != 24:
+    ranges.append((slider_values[-1], 24))
+
+# Résultat
+st.success("Plages horaires définies :")
+for start, end in ranges:
+    st.write(f"- {start:02.0f}h - {end:02.0f}h")
+
+# Tu peux utiliser `ranges` pour faire ton traitement après (comme parsed_time_ranges)
+parsed_time_ranges = ranges
