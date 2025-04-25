@@ -83,20 +83,7 @@ with col4:
     #start_hour = st.number_input("Heure de début de journée :", min_value=0, max_value=23, value=0, step=1)
     start_hour=0
     #write_log(f"Heure de début de journée sélectionnée : {start_hour}")
-with col3:
-    # Définir les plages horaires
-    default_time_ranges = [(5, 16), (16, 21), (21, 5)]
-    time_ranges = st.text_input(
-        "Définissez les plages horaires (format : hh-hh,hh-hh,...) :",
-        value=','.join([f"{start}-{end}" for start, end in default_time_ranges])
-    )
-    try:
-        parsed_time_ranges = [(int(start), int(end)) for start, end in (range_.split('-') for range_ in time_ranges.split(','))]
-        #write_log(f"Plages horaires sélectionnées : {parsed_time_ranges}")
-    except ValueError:
-        st.error("Format des plages horaires invalide. Utilisez le format hh-hh,hh-hh,...")
-        #write_log("Erreur : Format des plages horaires invalide.")
-        parsed_time_ranges = default_time_ranges
+
 
 # Filtrer les données horaires pour la semaine sélectionnée
 #write_log("Conversion des dates horaires et ajout des colonnes Semaine et Annee...")
@@ -224,6 +211,122 @@ else:
     # Afficher le tableau des valeurs de consommation pour la semaine
     st.write("### Données de consommation sur la semaine")
     st.dataframe(filtered_table)
+###################################
+
+
+# Définir les plages horaires
+# Définir les plages horaires
+default_time_ranges = [(5, 16), (16, 21), (21, 5)]
+time_ranges = st.text_input(
+    "Définissez les plages horaires (format : hh-hh,hh-hh,...) :",
+    value=','.join([f"{start}-{end}" for start, end in default_time_ranges])
+)
+try:
+    parsed_time_ranges = [(int(start), int(end)) for start, end in (range_.split('-') for range_ in time_ranges.split(','))]
+    #write_log(f"Plages horaires sélectionnées : {parsed_time_ranges}")
+except ValueError:
+    st.error("Format des plages horaires invalide. Utilisez le format hh-hh,hh-hh,...")
+    #write_log("Erreur : Format des plages horaires invalide.")
+    parsed_time_ranges = default_time_ranges
+
+# Boutons de filtre pour les graphiques
+st.markdown("### Choisissez une vue :")
+filter_option = st.radio(
+    label="",
+    options=["Général", "MP", "Laveuses", "Personnalisé"],
+    horizontal=True
+)
+
+######################################
+######################################
+
+st.write("### Répartition journalière par plages horaires (en %)")
+# 1. Colonnes sélectionnées selon le filtre
+
+selected_custom_columns = []
+if filter_option == "Personnalisé":
+    available_columns = [col for col in filtered_data.columns if "Consomation eau" in col]
+    selected_custom_columns = st.multiselect(
+        "Sélectionnez les données d'eau à visualiser :",
+        options=available_columns,
+        default=available_columns  # tu peux mettre [] si tu veux aucun par défaut
+    )
+
+
+# 1. Colonnes sélectionnées selon le filtre
+selected_columns = []
+
+if filter_option == "Personnalisé":
+    selected_columns = selected_custom_columns
+else:
+    for col in filtered_data.columns:
+        if "Consomation eau" not in col:
+            continue
+        if filter_option == "Général":
+            if "général" not in col.lower():
+                continue
+        elif filter_option == "MP":
+            if "MP" not in col:
+                continue
+        elif filter_option == "Laveuses":
+            if "laveuse" not in col.lower():
+                continue
+        selected_columns.append(col)
+
+
+# 2. Calcul des consommations par jour et plage horaire
+daily_by_slot = pd.DataFrame()
+
+for start, end in parsed_time_ranges:
+    col_name = f"{start}h-{end}h"
+    start+=1
+    end+=1
+    if start < end:
+        mask = (filtered_data["DateTime"].dt.hour >= start) & (filtered_data["DateTime"].dt.hour < end)
+    else:
+        mask = (filtered_data["DateTime"].dt.hour >= start) | (filtered_data["DateTime"].dt.hour < end)
+
+    slot_data = filtered_data[mask]
+    grouped = slot_data.groupby("Jour")[selected_columns].sum().sum(axis=1)
+    daily_by_slot[col_name] = grouped
+
+# Réorganiser l'ordre
+daily_by_slot = daily_by_slot[[f"{start}h-{end}h" for start, end in parsed_time_ranges]]
+
+# 3. Calcul des pourcentages
+daily_pct = daily_by_slot.div(daily_by_slot.sum(axis=1), axis=0) * 100
+
+
+# 4. Graphique final
+fig_stack_pct = go.Figure()
+for col in daily_pct.columns:
+    fig_stack_pct.add_trace(go.Scatter(
+        x=daily_pct.index,
+        y=daily_pct[col],
+        mode="lines",
+        stackgroup="one",
+        name=col,
+        hoverinfo="x+y+name"
+    ))
+
+fig_stack_pct.update_layout(
+    template="plotly_white",
+    title=f"Répartition journalière des plages horaires - {filter_option}",
+    xaxis_title="Jour",
+    yaxis_title="Pourcentage (%)",
+    legend_title="Plages horaires",
+    yaxis=dict(range=[0, 100], ticksuffix="%")
+)
+
+st.plotly_chart(fig_stack_pct, use_container_width=True)
+
+
+
+
+######################################
+############################################################################
+############################################################################
+######################################
 
 # Créer les colonnes pour les plages horaires
 #write_log("Calcul des consommations par plages horaires...")
@@ -251,6 +354,7 @@ hourly_data = hourly_data[[f"{start}h-{end}h" for start, end in parsed_time_rang
 # Palette de couleurs fixe pour chaque plage horaire
 color_mapping = {f"{start}h-{end}h": color for (start, end), color in zip(parsed_time_ranges, ["#636EFA", "#EF553B", "#00CC96", "#AB63FA", "#FFA15A"])}
 
+"""
 # Création des diagrammes en cercle pour chaque jour
 #write_log("Création des diagrammes en cercle pour chaque jour...")
 day_charts = st.columns(4)
@@ -268,7 +372,7 @@ for i, (day, day_data) in enumerate(hourly_data.iterrows()):
         legend=dict(traceorder="normal")  # Assurer l'ordre constant des légendes
     )
     day_charts[i % 4].plotly_chart(fig, use_container_width=True)
-
+"""
 # Création du diagramme en cercle pour la semaine entière
 #write_log("Création du diagramme en cercle pour la semaine entière...")
 st.write("### Répartition des consommations par tranches horaires")
