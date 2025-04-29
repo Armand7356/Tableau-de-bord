@@ -7,7 +7,7 @@ import locale
 
 # Configuration pour avoir les jours de la semaine en français
 #locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
-page = "eau"
+page = "elec"
 # Fonction pour récupérer le jour en français
 def get_french_day(date):
     return date.strftime('%A').capitalize()

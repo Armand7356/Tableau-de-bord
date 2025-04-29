@@ -84,7 +84,7 @@ def charger_limites_eau(fichier_path):
 
 
 
-page = "eau"    #"elec" ou "eau" ou "gaz"
+page = "gaz"    #"elec" ou "eau" ou "gaz"
 
 
 # Utilisation
@@ -253,7 +253,6 @@ else:
 
 
 
-
 # Ajouter un diagramme en cercle pour la répartition des volumes consommés
 st.write("### Répartition des volumes consommés")
 if "filtered_table" in locals() or "filtered_table" in globals():
@@ -274,58 +273,4 @@ if "filtered_table" in locals() or "filtered_table" in globals():
     else:
         st.warning("Aucune donnée disponible pour la répartition des consommations "+page+".")
 
-
-# Liste des compteurs à afficher dans le zoom sur ballon
-
-
-# === Zoom spécifique sur "Consommation eau ballon" ===
-if page == "eau":
-    st.write("### Zoom sur la Consommation Eau Ballon")
-
-    # Liste des compteurs secondaires à détailler
-    compteurs_ballon = [
-    "eau MP tunnel 1",
-    "eau MP tunnel 2",
-    "eau MP tunnel 3",
-    "eau MP salle cuisson",	
-    "eau MP salle lavage",	
-    "eau MP incrustation",	
-    "eau MP prepa glace"
-    # Ajoute ici tous les compteurs que tu veux afficher dans le zoom
-    ]
-
-    # Vérifier que les compteurs du zoom existent dans les colonnes
-    compteurs_zoom = [c for c in filtered_table.columns if any(x.lower() in c.lower() for x in compteurs_ballon)]
-
-    # Vérifier que "Consomation eau ballon" existe bien
-    if "Consomation eau ballon" in filtered_table.columns:
-        consommation_ballon_totale = filtered_table.loc["Somme", "Consomation eau ballon"]
-        
-        # Total consommé par les compteurs
-        if compteurs_zoom:
-            total_zoom = filtered_table.loc["Somme", compteurs_zoom]
-            somme_compteurs = total_zoom.sum()
-
-            # Calcul du reste
-            volume_autres = max(consommation_ballon_totale - somme_compteurs, 0)
-
-            # Préparer les données pour le camembert
-            labels = list(total_zoom.index) + ["Autres"]
-            values = list(total_zoom.values) + [volume_autres]
-
-            fig_zoom = go.Figure()
-            fig_zoom.add_trace(go.Pie(
-                labels=labels,
-                values=values,
-                hole=0.4,
-                marker=dict(colors=go.Figure().layout.template.layout.colorway)
-            ))
-            fig_zoom.update_layout(title="Détail de la consommation Eau Ballon")
-            
-            st.plotly_chart(fig_zoom, use_container_width=True)
-
-        else:
-            st.info("Aucun compteur spécifique trouvé pour détailler l'eau ballon.")
-    else:
-        st.warning("La colonne 'Consomation eau ballon' n'existe pas dans les données.")
 

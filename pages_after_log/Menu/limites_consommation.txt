@@ -1,0 +1,25 @@
+Consomation eau général	60.0
+Consomation eau ballon	45.0
+Consomation eau chaufferie	3.0
+Consomation eau chaudière vapeur	3.0
+Consomation eau laveuse bac	10.0
+Consomation eau condenseur	3.0
+Consomation eau pasto L1	5.0
+Consomation eau pasto L2	5.0
+Consomation eau pasto L3	5.0
+Consomation eau prepa pate	5.0
+Consomation eau MP tunnel 1	8.0
+Consomation eau MP tunnel 2	8.0
+Consomation eau MP tunnel 3	8.0
+Consomation eau MP salle cuisson	15.0
+Consomation eau MP salle lavage	15.0
+Consomation eau MP incrustation	15.0
+Consomation eau MP prepa glace	15.0
+Consomation eau laveuse frontale	10.0
+Consomation gaz général	5000.0
+Consomation gaz chaudiere 1	1500.0
+Consomation gaz chaudiere 2	1500.0
+Consomation gaz ballon	2000.0
+Consomation elec général	5500.0
+Consomation elec HP	0.0
+Consomation elec HC	0.0
