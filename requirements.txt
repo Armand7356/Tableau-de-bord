@@ -6,7 +6,4 @@ openpyxl
 plotly
 bcrypt
 scipy
-locale
-io
-
 
